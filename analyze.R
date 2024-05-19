@@ -2,10 +2,10 @@ set.seed(1)
 
 folder <- "results/"
 experiment_settings <- c(
-  "watermark200",
-  "watermark100-nowatermark100",
-  "watermark80-nowatermark60-watermark60",
-  "watermark40-nowatermark50-watermark60-nowatermark20-watermark30"
+  "watermark250",
+  "watermark250-nowatermark250",
+  "watermark200-nowatermark100-watermark200",
+  "watermark100-nowatermark100-watermark100-nowatermark100-watermark100"
 )
 models <- c("facebook/opt-1.3b", "openai-community/gpt2")
 models_folders_prefix <- c("opt", "gpt")
