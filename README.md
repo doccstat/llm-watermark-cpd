@@ -1,22 +1,52 @@
 # llm-watermark-cpd
 
-## Set up environments
+## Prerequisites
+
+<details closed>
+<summary>Python environments</summary>
+
+-   Cython==3.0.10
+-   datasets==2.19.1
+-   huggingface_hub==0.23.0
+-   nltk==3.8.1
+-   numpy==1.26.4
+-   sacremoses==0.0.53
+-   scipy==1.13.0
+-   sentencepiece==0.2.0
+-   tokenizers==0.19.1
+-   torch==2.3.0.post100
+-   torchaudio==2.3.0
+-   torchvision==0.18.0
+-   tqdm==4.66.4
+-   transformers==4.40.2
+
+</details>
+
+### Set up environments
+
+#### Python
+
+> [!NOTE]
+> Refer to https://pytorch.org for PyTorch installation on other platforms
 
 ```shell
-conda create --name watermark
-conda activate watermark
-
-# Refer to https://pytorch.org for PyTorch installation on other platforms
+# conda install pytorch torchvision torchaudio cpuonly -c pytorch
 conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
 conda install conda-forge::transformers
 conda install cython scipy nltk sentencepiece sacremoses
 ```
 
+#### R
+
 > [!NOTE]
 > R is used for change point detection. Refer to https://www.r-project.org for
 > installation instructions.
 
-## Usage
+```r
+install.packages(c("doParallel", "reshape2", "ggplot2", "fossil"))
+```
+
+## Instruction
 
 To reproduce the results, follow the instructions below or use the attached
 results directly using `Rscript analyze.R 1 3200`.
