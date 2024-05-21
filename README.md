@@ -27,6 +27,14 @@ results directly using `Rscript analyze.R 1 3200`.
 python setup.py build_ext --inplace
 ```
 
+#### Expected running time
+
+Less than 1 minute on a single core CPU machine.
+
+#### Expected memory usage
+
+Less than 1 GB.
+
 ### Generate watermarked tokens
 
 ```shell
@@ -49,6 +57,14 @@ for method in gumbel transform; do
 done
 ```
 
+#### Expected running time
+
+Less than 4 hours on 1 compute node with 1 NVIDIA A30 GPU and 128 CPU cores.
+
+#### Expected memory usage
+
+Less than 128 GB.
+
 ### Calculate p-values for sliding windows
 
 ```shell
@@ -70,9 +86,25 @@ chmod +x ./detect.sh
 parallel -j 50 --progress ./detect.sh {1} {2} {3} ::: gumbel transform ::: $(seq 1 100) ::: watermark500 watermark250-nowatermark250 watermark200-nowatermark100-watermark200 watermark100-nowatermark100-watermark100-nowatermark100-watermark100
 ```
 
+#### Expected running time
+
+Less than 24 hours on 8 compute nodes with no GPU and 28 CPU cores each.
+
+#### Expected memory usage
+
+Less than 10 GB per compute node.
+
 ### Change point analysis
 
 ```shell
 parallel -j 8 --progress Rscript analyze.R {1} {2} ::: $(seq 1 400 2801) ::: $(seq 400 400 3200)
 Rscript analyze.R 1 3200
 ```
+
+#### Expected running time
+
+Less than 12 hours on 8 compute nodes with no GPU and 28 CPU cores each.
+
+#### Expected memory usage
+
+Less than 10 GB per compute node.
