@@ -105,6 +105,15 @@ Rscript analyze.R 1 3200
 
 Less than 12 hours on 8 compute nodes with no GPU and 28 CPU cores each.
 
+##### Running time test
+
+The following command should run in less than 10 minutes on 1 compute node
+with no GPU and 28 CPU cores.
+
+```shell
+Rscript analyze.R 1 5
+```
+
 #### Expected memory usage
 
 Less than 10 GB per compute node.
