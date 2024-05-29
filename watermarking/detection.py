@@ -3,15 +3,21 @@ import scipy
 import numpy as np
 
 
-def sliding_permutation_test(tokens, vocab_size, n, k, seed, test_stats, n_runs=100, max_seed=100000):
+def sliding_permutation_test(
+    tokens, vocab_size, n, k, seed, test_stats, n_runs=100, max_seed=100000
+):
     pvalues = np.full((len(test_stats), len(tokens)), np.nan)
     for i in range(k // 2, len(tokens) - k // 2):
-        pvalues[:, i] = permutation_test(tokens[(
-            i - k // 2):(i + k // 2 + 1)], vocab_size, n, k, seed, test_stats, n_runs, max_seed)
+        pvalues[:, i] = permutation_test(
+            tokens[(i - k // 2):(i + k // 2 + 1)
+                   ], vocab_size, n, k, seed, test_stats, n_runs, max_seed
+        )
     return pvalues
 
 
-def permutation_test(tokens, vocab_size, n, k, seed, test_stats, n_runs=100, max_seed=100000):
+def permutation_test(
+    tokens, vocab_size, n, k, seed, test_stats, n_runs=100, max_seed=100000
+):
     generator = torch.Generator()
 
     test_results = []
@@ -48,7 +54,10 @@ def permutation_test(tokens, vocab_size, n, k, seed, test_stats, n_runs=100, max
     return (np.sum(null_results <= test_results, axis=0) + 1.0) / (n_runs + 1.0)
 
 
-def phi(tokens, n, k, generator, key_func, vocab_size, dist, null=False, normalize=False):
+def phi(
+        tokens, n, k, generator, key_func, vocab_size, dist,
+        null=False, normalize=False
+):
     if null:
         tokens = torch.unique(tokens, return_inverse=True, sorted=False)[1]
         eff_vocab_size = torch.max(tokens) + 1

@@ -9,9 +9,11 @@ import numpy as np
 from numpy import genfromtxt
 
 from watermarking.transform.score import transform_score, transform_edit_score
+from watermarking.transform.score import its_score, itsl_score
 from watermarking.transform.key import transform_key_func
 
 from watermarking.gumbel.score import gumbel_score, gumbel_edit_score
+from watermarking.gumbel.score import ems_score, emsl_score
 from watermarking.gumbel.key import gumbel_key_func
 
 import argparse
@@ -89,15 +91,21 @@ seeds = np.genfromtxt(args.token_file + '-seeds.txt',
 ################################################################################
 
 
-def sliding_permutation_test(tokens, vocab_size, n, k, seed, test_stats, n_runs=100, max_seed=100000):
+def sliding_permutation_test(
+    tokens, vocab_size, n, k, seed, test_stats, n_runs=100, max_seed=100000
+):
     pvalues = np.full((len(test_stats), len(tokens)), np.nan)
     for i in range(k // 2, len(tokens) - k // 2):
-        pvalues[:, i] = permutation_test(tokens[(
-            i - k // 2):(i + k // 2 + 1)], vocab_size, n, k, seed, test_stats, n_runs, max_seed)
+        pvalues[:, i] = permutation_test(
+            tokens[(i - k // 2):(i + k // 2 + 1)
+                   ], vocab_size, n, k, seed, test_stats, n_runs, max_seed
+        )
     return pvalues
 
 
-def permutation_test(tokens, vocab_size, n, k, seed, test_stats, n_runs=100, max_seed=100000):
+def permutation_test(
+    tokens, vocab_size, n, k, seed, test_stats, n_runs=100, max_seed=100000
+):
     generator = torch.Generator()
 
     test_results = []
@@ -134,7 +142,10 @@ def permutation_test(tokens, vocab_size, n, k, seed, test_stats, n_runs=100, max
     return (np.sum(null_results <= test_results, axis=0) + 1.0) / (n_runs + 1.0)
 
 
-def phi(tokens, n, k, generator, key_func, vocab_size, dist, null=False, normalize=False):
+def phi(
+        tokens, n, k, generator, key_func, vocab_size, dist,
+        null=False, normalize=False
+):
     if null:
         tokens = torch.unique(torch.asarray(
             tokens), return_inverse=True, sorted=False)[1]
@@ -171,56 +182,122 @@ if args.method == "transform":
     test_stats = []
     def dist1(x, y): return transform_edit_score(x, y, gamma=args.gamma)
 
-    def test_stat1(tokens, n, k, generator, vocab_size, null=False): return phi(tokens=tokens,
-                                                                                n=n,
-                                                                                k=k,
-                                                                                generator=generator,
-                                                                                key_func=transform_key_func,
-                                                                                vocab_size=vocab_size,
-                                                                                dist=dist1,
-                                                                                null=False,
-                                                                                normalize=True)
+    def test_stat1(tokens, n, k, generator, vocab_size, null=False): return phi(
+        tokens=tokens,
+        n=n,
+        k=k,
+        generator=generator,
+        key_func=transform_key_func,
+        vocab_size=vocab_size,
+        dist=dist1,
+        null=False,
+        normalize=True
+    )
     test_stats.append(test_stat1)
     def dist2(x, y): return transform_score(x, y)
 
-    def test_stat2(tokens, n, k, generator, vocab_size, null=False): return phi(tokens=tokens,
-                                                                                n=n,
-                                                                                k=k,
-                                                                                generator=generator,
-                                                                                key_func=transform_key_func,
-                                                                                vocab_size=vocab_size,
-                                                                                dist=dist2,
-                                                                                null=False,
-                                                                                normalize=True)
+    def test_stat2(tokens, n, k, generator, vocab_size, null=False): return phi(
+        tokens=tokens,
+        n=n,
+        k=k,
+        generator=generator,
+        key_func=transform_key_func,
+        vocab_size=vocab_size,
+        dist=dist2,
+        null=False,
+        normalize=True
+    )
     test_stats.append(test_stat2)
+    def dist3(x, y): return its_score(x, y, vocab_size=vocab_size)
+
+    def test_stat3(tokens, n, k, generator, vocab_size, null=False): return phi(
+        tokens=tokens,
+        n=n,
+        k=k,
+        generator=generator,
+        key_func=transform_key_func,
+        vocab_size=vocab_size,
+        dist=dist3,
+        null=False,
+        normalize=True
+    )
+    test_stats.append(test_stat3)
+
+    def dist4(x, y): return itsl_score(
+        x, y, vocab_size=vocab_size, gamma=args.gamma)
+
+    def test_stat4(tokens, n, k, generator, vocab_size, null=False): return phi(
+        tokens=tokens,
+        n=n,
+        k=k,
+        generator=generator,
+        key_func=transform_key_func,
+        vocab_size=vocab_size,
+        dist=dist4,
+        null=False,
+        normalize=True
+    )
+    test_stats.append(test_stat4)
 
 
 elif args.method == "gumbel":
     test_stats = []
     def dist1(x, y): return gumbel_edit_score(x, y, gamma=args.gamma)
 
-    def test_stat1(tokens, n, k, generator, vocab_size, null=False): return phi(tokens=tokens,
-                                                                                n=n,
-                                                                                k=k,
-                                                                                generator=generator,
-                                                                                key_func=gumbel_key_func,
-                                                                                vocab_size=vocab_size,
-                                                                                dist=dist1,
-                                                                                null=null,
-                                                                                normalize=False)
+    def test_stat1(tokens, n, k, generator, vocab_size, null=False): return phi(
+        tokens=tokens,
+        n=n,
+        k=k,
+        generator=generator,
+        key_func=gumbel_key_func,
+        vocab_size=vocab_size,
+        dist=dist1,
+        null=null,
+        normalize=False
+    )
     test_stats.append(test_stat1)
     def dist2(x, y): return gumbel_score(x, y)
 
-    def test_stat2(tokens, n, k, generator, vocab_size, null=False): return phi(tokens=tokens,
-                                                                                n=n,
-                                                                                k=k,
-                                                                                generator=generator,
-                                                                                key_func=gumbel_key_func,
-                                                                                vocab_size=vocab_size,
-                                                                                dist=dist2,
-                                                                                null=null,
-                                                                                normalize=False)
+    def test_stat2(tokens, n, k, generator, vocab_size, null=False): return phi(
+        tokens=tokens,
+        n=n,
+        k=k,
+        generator=generator,
+        key_func=gumbel_key_func,
+        vocab_size=vocab_size,
+        dist=dist2,
+        null=null,
+        normalize=False
+    )
     test_stats.append(test_stat2)
+    def dist3(x, y): return ems_score(x, y)
+
+    def test_stat3(tokens, n, k, generator, vocab_size, null=False): return phi(
+        tokens=tokens,
+        n=n,
+        k=k,
+        generator=generator,
+        key_func=gumbel_key_func,
+        vocab_size=vocab_size,
+        dist=dist3,
+        null=null,
+        normalize=False
+    )
+    test_stats.append(test_stat3)
+    def dist4(x, y): return emsl_score(x, y, gamma=args.gamma)
+
+    def test_stat4(tokens, n, k, generator, vocab_size, null=False): return phi(
+        tokens=tokens,
+        n=n,
+        k=k,
+        generator=generator,
+        key_func=gumbel_key_func,
+        vocab_size=vocab_size,
+        dist=dist4,
+        null=null,
+        normalize=False
+    )
+    test_stats.append(test_stat4)
 else:
     raise
 
@@ -233,7 +310,6 @@ def test(tokens, seed): return sliding_permutation_test(tokens,
                                                         k,
                                                         seed,
                                                         test_stats)
-#   null_results)
 
 
 t1 = time.time()
@@ -251,12 +327,24 @@ if args.method == "transform":
     csv_saves.append(open(args.token_file + '/' +
                      str(args.Tindex) + '-transform.csv', 'w'))
     csvWriters.append(csv.writer(csv_saves[-1], delimiter=','))
+    csv_saves.append(open(args.token_file + '/' +
+                     str(args.Tindex) + '-its.csv', 'w'))
+    csvWriters.append(csv.writer(csv_saves[-1], delimiter=','))
+    csv_saves.append(open(args.token_file + '/' +
+                          str(args.Tindex) + '-itsl.csv', 'w'))
+    csvWriters.append(csv.writer(csv_saves[-1], delimiter=','))
 elif args.method == "gumbel":
     csv_saves.append(open(args.token_file + '/' +
                      str(args.Tindex) + '-gumbel-edit.csv', 'w'))
     csvWriters.append(csv.writer(csv_saves[-1], delimiter=','))
     csv_saves.append(open(args.token_file + '/' +
                      str(args.Tindex) + '-gumbel.csv', 'w'))
+    csvWriters.append(csv.writer(csv_saves[-1], delimiter=','))
+    csv_saves.append(open(args.token_file + '/' +
+                     str(args.Tindex) + '-ems.csv', 'w'))
+    csvWriters.append(csv.writer(csv_saves[-1], delimiter=','))
+    csv_saves.append(open(args.token_file + '/' +
+                     str(args.Tindex) + '-emsl.csv', 'w'))
     csvWriters.append(csv.writer(csv_saves[-1], delimiter=','))
 elif args.method == "kirchenbauer":
     csv_saves.append(open(args.token_file + '/' +

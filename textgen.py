@@ -15,14 +15,11 @@ import copy
 import numpy as np
 
 from watermarking.generation import generate, generate_rnd
-from watermarking.detection import phi, sliding_permutation_test
 from watermarking.attacks import insertion_block_attack, substitution_block_attack
 
-from watermarking.transform.score import transform_score, transform_edit_score
 from watermarking.transform.sampler import transform_sampling
 from watermarking.transform.key import transform_key_func
 
-from watermarking.gumbel.score import gumbel_score, gumbel_edit_score
 from watermarking.gumbel.sampler import gumbel_sampling
 from watermarking.gumbel.key import gumbel_key_func
 
@@ -171,33 +168,6 @@ if args.method == "transform":
                                                           transform_sampling,
                                                           random_offset=args.offset)
 
-    test_stats = []
-    def dist1(x, y): return transform_edit_score(x, y, gamma=args.gamma)
-
-    def test_stat1(tokens, n, k, generator, vocab_size, null=False): return phi(tokens=tokens,
-                                                                                n=n,
-                                                                                k=k,
-                                                                                generator=generator,
-                                                                                key_func=transform_key_func,
-                                                                                vocab_size=vocab_size,
-                                                                                dist=dist1,
-                                                                                null=False,
-                                                                                normalize=True)
-    test_stats.append(test_stat1)
-    def dist2(x, y): return transform_score(x, y)
-
-    def test_stat2(tokens, n, k, generator, vocab_size, null=False): return phi(tokens=tokens,
-                                                                                n=n,
-                                                                                k=k,
-                                                                                generator=generator,
-                                                                                key_func=transform_key_func,
-                                                                                vocab_size=vocab_size,
-                                                                                dist=dist2,
-                                                                                null=False,
-                                                                                normalize=True)
-    test_stats.append(test_stat2)
-
-
 elif args.method == "gumbel":
     def generate_watermark(prompt, seed): return generate(model,
                                                           prompt,
@@ -208,33 +178,6 @@ elif args.method == "gumbel":
                                                           gumbel_key_func,
                                                           gumbel_sampling,
                                                           random_offset=args.offset)
-
-    test_stats = []
-    def dist1(x, y): return gumbel_edit_score(x, y, gamma=args.gamma)
-
-    def test_stat1(tokens, n, k, generator, vocab_size, null=False): return phi(tokens=tokens,
-                                                                                n=n,
-                                                                                k=k,
-                                                                                generator=generator,
-                                                                                key_func=gumbel_key_func,
-                                                                                vocab_size=vocab_size,
-                                                                                dist=dist1,
-                                                                                null=null,
-                                                                                normalize=False)
-    test_stats.append(test_stat1)
-    def dist2(x, y): return gumbel_score(x, y)
-
-    def test_stat2(tokens, n, k, generator, vocab_size, null=False): return phi(tokens=tokens,
-                                                                                n=n,
-                                                                                k=k,
-                                                                                generator=generator,
-                                                                                key_func=gumbel_key_func,
-                                                                                vocab_size=vocab_size,
-                                                                                dist=dist2,
-                                                                                null=null,
-                                                                                normalize=False)
-    test_stats.append(test_stat2)
-
 
 elif args.method == "kirchenbauer":
     watermark_processor = WatermarkLogitsProcessor(vocab=list(tokenizer.get_vocab().values()),
@@ -258,29 +201,10 @@ elif args.method == "kirchenbauer":
         min_new_tokens=new_tokens+buffer_tokens,
         top_k=0,
         logits_processor=LogitsProcessorList([watermark_processor])).cpu()
-
-    def test_stat_wrapper(tokens):
-        try:
-            return torch.tensor(-watermark_detector.detect(tokenizer.decode(tokens, skip_special_tokens=True))['z_score'])
-        except:
-            return torch.tensor(0.0)
-
-    def test_stat(tokens, n, k, generator, vocab_size,
-                  null=False): return test_stat_wrapper(tokens)
-    test_stats = [test_stat]
 else:
     raise
 
 ds_iterator = iter(dataset)
-
-
-def test(tokens, seed): return sliding_permutation_test(tokens,
-                                                        vocab_size,
-                                                        n,
-                                                        k,
-                                                        seed,
-                                                        test_stats)
-
 
 t1 = time()
 
