@@ -1,7 +1,10 @@
 import torch
 
 
-def generate(model, prompts, vocab_size, n, m, seeds, key_func, sampler, random_offset=True):
+def generate(
+        model, prompts, vocab_size, n, m, seeds, key_func, sampler,
+        random_offset=True, log_file=None
+):
     batch_size = len(prompts)
 
     generator = torch.Generator()
@@ -23,6 +26,9 @@ def generate(model, prompts, vocab_size, n, m, seeds, key_func, sampler, random_
     attn = torch.ones_like(inputs)
     past = None
     for i in range(m):
+        if log_file:
+            log_file.write(f"Generating token {i+1} of {m}\n")
+            log_file.flush()
         with torch.no_grad():
             if past:
                 output = model(
@@ -43,11 +49,14 @@ def generate(model, prompts, vocab_size, n, m, seeds, key_func, sampler, random_
 # generate unwatermarked completions of token length m given list of prompts
 
 
-def generate_rnd(prompts, m, model):
+def generate_rnd(prompts, m, model, log_file=None):
     inputs = prompts.to(model.device)
     attn = torch.ones_like(inputs)
     past = None
     for i in range(m):
+        if log_file:
+            log_file.write(f"Generating token {i+1} of {m}\n")
+            log_file.flush()
         with torch.no_grad():
             if past:
                 output = model(

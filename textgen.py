@@ -188,7 +188,8 @@ if args.method == "transform":
             seed,
             transform_key_func,
             transform_sampling,
-            random_offset=args.offset
+            random_offset=args.offset,
+            log_file=log_file
         )
 
 elif args.method == "gumbel":
@@ -202,7 +203,8 @@ elif args.method == "gumbel":
             seed,
             gumbel_key_func,
             gumbel_sampling,
-            random_offset=args.offset
+            random_offset=args.offset,
+            log_file=log_file
         )
 
 elif args.method == "kirchenbauer":
@@ -272,7 +274,7 @@ for batch in range(n_batches):
                        min(T, (batch + 1) * args.batch_size))
 
     null_samples.append(generate_rnd(
-        prompts[idx], new_tokens+buffer_tokens, model)[:, prompt_tokens:])
+        prompts[idx], new_tokens+buffer_tokens, model)[:, prompt_tokens:], log_file=log_file)
     watermarked_samples.append(generate_watermark(
         prompts[idx], seeds[idx])[:, prompt_tokens:])
 
