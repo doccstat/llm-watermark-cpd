@@ -78,14 +78,16 @@ log_file.flush()
 # fix the random seed for reproducibility
 t0 = time()
 torch.manual_seed(args.seed)
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 try:
     tokenizer = AutoTokenizer.from_pretrained(
         "/scratch/user/anthony.li/models/" + args.model + "/tokenizer")
     model = AutoModelForCausalLM.from_pretrained(
-        "/scratch/user/anthony.li/models/" + args.model + "/model")
-    model = model.to(device)
+        "/scratch/user/anthony.li/models/" + args.model + "/model",
+        device_map = 'auto'
+    )
+
     log_file.write(f'Loaded the local model\n')
 except:
     tokenizer = AutoTokenizer.from_pretrained(args.model)
