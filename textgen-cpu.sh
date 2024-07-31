@@ -34,9 +34,9 @@ n=1000
 for method in gumbel transform; do
   python textgen.py \
     --save results/ml3-watermark500-$method.p \
-    --n $n \
+    --watermark_key_length $n \
     --batch_size 25 \
-    --m 500 \
+    --tokens_count 500 \
     --model meta-llama/Meta-Llama-3-8B \
     --seed 1 \
     --T 10 \
@@ -44,9 +44,9 @@ for method in gumbel transform; do
     --method $method
   python textgen.py \
     --save results/ml3-watermark250-nowatermark250-$method.p \
-    --n $n \
+    --watermark_key_length $n \
     --batch_size 25 \
-    --m 250 \
+    --tokens_count 250 \
     --model meta-llama/Meta-Llama-3-8B \
     --seed 1 \
     --T 10 \
@@ -56,9 +56,9 @@ for method in gumbel transform; do
     --insertion_blocks_length 250
   python textgen.py \
     --save results/ml3-watermark200-nowatermark100-watermark200-$method.p \
-    --n $n \
+    --watermark_key_length $n \
     --batch_size 25 \
-    --m 500 \
+    --tokens_count 500 \
     --model meta-llama/Meta-Llama-3-8B \
     --seed 1 \
     --T 10 \
@@ -68,9 +68,9 @@ for method in gumbel transform; do
     --substitution_blocks_end 300
   python textgen.py \
     --save results/ml3-watermark100-nowatermark100-watermark100-nowatermark100-watermark100-$method.p \
-    --n $n \
+    --watermark_key_length $n \
     --batch_size 25 \
-    --m 400 \
+    --tokens_count 400 \
     --model meta-llama/Meta-Llama-3-8B \
     --seed 1 \
     --T 10 \
@@ -91,9 +91,9 @@ for method in gumbel transform; do
   # 351-400: substitute
   python textgen.py \
     --save results/ml3-9changepoints-$method.p \
-    --n $n \
+    --watermark_key_length $n \
     --batch_size 25 \
-    --m 400 \
+    --tokens_count 400 \
     --model meta-llama/Meta-Llama-3-8B \
     --seed 1 \
     --T 10 \
@@ -122,9 +122,9 @@ for method in gumbel transform; do
   # 376-400: substitute
   python textgen.py \
     --save results/ml3-19changepoints-$method.p \
-    --n $n \
+    --watermark_key_length $n \
     --batch_size 25 \
-    --m 400 \
+    --tokens_count 400 \
     --model meta-llama/Meta-Llama-3-8B \
     --seed 1 \
     --T 10 \
