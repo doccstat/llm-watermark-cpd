@@ -148,7 +148,7 @@ for method in gumbel transform; do
   python textgen.py \
     --save results/ml3-0changepoints-$method.p \
     --watermark_key_length $n \
-    --batch_size 25 \
+    --batch_size 10 \
     --tokens_count 500 \
     --model meta-llama/Meta-Llama-3-8B \
     --seed 1 \
@@ -160,7 +160,7 @@ for method in gumbel transform; do
   python textgen.py \
     --save results/ml3-1changepoints-$method.p \
     --watermark_key_length $n \
-    --batch_size 25 \
+    --batch_size 10 \
     --tokens_count 250 \
     --model meta-llama/Meta-Llama-3-8B \
     --seed 1 \
@@ -176,7 +176,7 @@ for method in gumbel transform; do
   python textgen.py \
     --save results/ml3-3changepoints-$method.p \
     --watermark_key_length $n \
-    --batch_size 25 \
+    --batch_size 10 \
     --tokens_count 500 \
     --model meta-llama/Meta-Llama-3-8B \
     --seed 1 \
@@ -193,7 +193,7 @@ for method in gumbel transform; do
   python textgen.py \
     --save results/ml3-4changepoints-$method.p \
     --watermark_key_length $n \
-    --batch_size 25 \
+    --batch_size 10 \
     --tokens_count 400 \
     --model meta-llama/Meta-Llama-3-8B \
     --seed 1 \
