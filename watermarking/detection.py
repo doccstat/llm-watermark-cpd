@@ -26,7 +26,7 @@ def sliding_permutation_test(
 
 
 def permutation_test(
-    tokens, vocab_size, n, k, seed, test_stats, log_file,
+    tokens, vocab_size, n, k, seed, test_stats,
     n_runs=100, max_seed=100000
 ):
     generator = torch.Generator()
@@ -46,12 +46,7 @@ def permutation_test(
     p_val = 0
     null_results = []
     t0 = time.time()
-    log_file.write(f'Begin {n_runs} permutation tests\n')
-    log_file.flush()
     for run in range(n_runs):
-        if run % 100 == 0:
-            log_file.write(f'Run {run} (t = {time.time()-t0} seconds)\n')
-            log_file.flush()
         null_results.append([])
 
         seed = torch.randint(high=max_seed, size=(1,)).item()
