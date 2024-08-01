@@ -4,7 +4,7 @@ import numpy as np
 
 
 def sliding_permutation_test(
-    tokens, vocab_size, n, k, seed, test_stats,
+    tokens, vocab_size, n, k, seed, test_stats, log_file=None,
     n_runs=100, max_seed=100000, fixed_i=None
 ):
     if fixed_i is None:
@@ -20,13 +20,14 @@ def sliding_permutation_test(
             return pvalues
         pvalues[:, 0] = permutation_test(
             tokens[(fixed_i - k // 2):(fixed_i + k // 2 + 1)
-                   ], vocab_size, n, k, seed, test_stats, n_runs, max_seed
+                   ], vocab_size, n, k, seed, test_stats, log_file,
+                   n_runs, max_seed
         )
     return pvalues
 
 
 def permutation_test(
-    tokens, vocab_size, n, k, seed, test_stats,
+    tokens, vocab_size, n, k, seed, test_stats, log_file=None,
     n_runs=100, max_seed=100000
 ):
     generator = torch.Generator()
@@ -46,7 +47,12 @@ def permutation_test(
     p_val = 0
     null_results = []
     t0 = time.time()
+    log_file.write(f'Begin {n_runs} permutation tests\n')
+    log_file.flush()
     for run in range(n_runs):
+        if run % 100 == 0:
+            log_file.write(f'Run {run} (t = {time.time()-t0} seconds)\n')
+            log_file.flush()
         null_results.append([])
 
         seed = torch.randint(high=max_seed, size=(1,)).item()
