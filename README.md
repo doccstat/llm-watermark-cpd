@@ -82,22 +82,32 @@ Less than 128 GB.
 ### Calculate p-values for sliding windows
 
 ```shell
+rm -f detect-commands.sh
 for method in gumbel transform; do
-  mkdir -p results/opt-watermark500-$method.pfacebook.opt-1.3b$method
-  mkdir -p results/opt-watermark250-nowatermark250-$method.pfacebook.opt-1.3b$method
-  mkdir -p results/opt-watermark200-nowatermark100-watermark200-$method.pfacebook.opt-1.3b$method
-  mkdir -p results/opt-watermark100-nowatermark100-watermark100-nowatermark100-watermark100-$method.pfacebook.opt-1.3b$method
+  for cpts in 0 1 2 4 9 19; do
+    mkdir -p results/ml3-${cpts}changepoints-$method.p-detect
+    for Tindex in $(seq 0 9); do
+      for k in 10 20 30 40 50; do
+        for fixed_i in $(seq 0 499); do
+          echo "bash ./detect-helper.sh $method $Tindex $cpts $k $fixed_i" >> detect-commands.sh
+        done
+      done
+    done
+  done
 done
 
-for method in gumbel transform; do
-  mkdir -p results/gpt-watermark500-$method.popenai-community.gpt2$method
-  mkdir -p results/gpt-watermark250-nowatermark250-$method.popenai-community.gpt2$method
-  mkdir -p results/gpt-watermark200-nowatermark100-watermark200-$method.popenai-community.gpt2$method
-  mkdir -p results/gpt-watermark100-nowatermark100-watermark100-nowatermark100-watermark100-$method.popenai-community.gpt2$method
+previous_job_id=""
+for offset in $(seq 0 1000 $(($(wc -l < detect-commands.sh) - 1000))); do
+    if [[ -z $previous_job_id ]]; then
+        job_id=$(sbatch detect.sh -- --offset=$offset | awk '{print $4}')
+        echo "Submitted first job with ID $job_id"
+    else
+        sleep 600
+        job_id=$(sbatch --dependency=afterany:$previous_job_id detect.sh -- --offset=$offset | awk '{print $4}')
+        echo "Submitted job with ID $job_id, dependent on job $previous_job_id"
+    fi
+    previous_job_id=$job_id
 done
-
-chmod +x ./detect.sh
-parallel -j 50 --progress ./detect.sh {1} {2} {3} ::: gumbel transform ::: $(seq 1 100) ::: watermark500 watermark250-nowatermark250 watermark200-nowatermark100-watermark200 watermark100-nowatermark100-watermark100-nowatermark100-watermark100
 ```
 
 #### Expected running time

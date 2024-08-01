@@ -164,3 +164,4 @@ results/*.p
 results/*.txt
 watermarking/transform/*.c
 watermarking/gumbel/*.c
+detect-commands.sh
