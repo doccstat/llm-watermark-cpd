@@ -67,6 +67,8 @@ if args.model == "facebook/opt-1.3b":
     vocab_size = 50272
 elif args.model == "openai-community/gpt2":
     vocab_size = 50257
+elif args.model == "meta-llama/Meta-Llama-3-8B":
+    vocab_size = 128256
 else:
     from transformers import AutoModelForCausalLM
     model = AutoModelForCausalLM.from_pretrained(args.model).to(
