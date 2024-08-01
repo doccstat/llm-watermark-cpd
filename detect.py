@@ -239,41 +239,59 @@ csv_saves = []
 csvWriters = []
 if args.method == "transform":
     csv_saves.append(open(args.token_file + '-detect/' +
-                     str(args.Tindex) + '-transform-edit-' + fixed_i + '.csv',
+                     str(args.Tindex) + '-transform-edit-' +
+                     str(fixed_i) +
+                     '.csv',
                      'w'))
     csvWriters.append(csv.writer(csv_saves[-1], delimiter=','))
     csv_saves.append(open(args.token_file + '-detect/' +
-                     str(args.Tindex) + '-transform-' + fixed_i + '.csv',
+                     str(args.Tindex) + '-transform-' +
+                     str(fixed_i) +
+                     '.csv',
                      'w'))
     csvWriters.append(csv.writer(csv_saves[-1], delimiter=','))
     # csv_saves.append(open(args.token_file + '-detect/' +
-    #                  str(args.Tindex) + '-its-' + fixed_i + '.csv',
-    #                  'w'))
+    #                  str(args.Tindex) + '-its-' +
+    #     str(fixed_i) +
+    #     '.csv',
+    #     'w'))
     # csvWriters.append(csv.writer(csv_saves[-1], delimiter=','))
     # csv_saves.append(open(args.token_file + '-detect/' +
-    #                       str(args.Tindex) + '-itsl-' + fixed_i + '.csv',
+    #                       str(args.Tindex) + '-itsl-' +
+    #                       str(fixed_i) +
+    #                       '.csv',
     #                       'w'))
     # csvWriters.append(csv.writer(csv_saves[-1], delimiter=','))
 elif args.method == "gumbel":
     csv_saves.append(open(args.token_file + '-detect/' +
-                     str(args.Tindex) + '-gumbel-edit-' + fixed_i + '.csv',
+                     str(args.Tindex) + '-gumbel-edit-' +
+                     str(fixed_i) +
+                     '.csv',
                      'w'))
     csvWriters.append(csv.writer(csv_saves[-1], delimiter=','))
     csv_saves.append(open(args.token_file + '-detect/' +
-                     str(args.Tindex) + '-gumbel-' + fixed_i + '.csv',
+                     str(args.Tindex) + '-gumbel-' +
+                     str(fixed_i) +
+                     '.csv',
                      'w'))
     csvWriters.append(csv.writer(csv_saves[-1], delimiter=','))
     # csv_saves.append(open(args.token_file + '-detect/' +
-    #                  str(args.Tindex) + '-ems-' + fixed_i + '.csv',
-    #                  'w'))
+    #                  str(args.Tindex) + '-ems-' +
+    #     str(fixed_i) +
+    #     '.csv',
+    #     'w'))
     # csvWriters.append(csv.writer(csv_saves[-1], delimiter=','))
     # csv_saves.append(open(args.token_file + '-detect/' +
-    #                  str(args.Tindex) + '-emsl-' + fixed_i + '.csv',
-    #                  'w'))
+    #                  str(args.Tindex) + '-emsl-' +
+    #     str(fixed_i) +
+    #     '.csv',
+    #     'w'))
     # csvWriters.append(csv.writer(csv_saves[-1], delimiter=','))
 elif args.method == "kirchenbauer":
     csv_saves.append(open(args.token_file + '-detect/' +
-                     str(args.Tindex) + '-kirchenbauer-' + fixed_i + '.csv',
+                     str(args.Tindex) + '-kirchenbauer-' +
+                     str(fixed_i) +
+                     '.csv',
                      'w'))
     csvWriters.append(csv.writer(csv_saves[-1], delimiter=','))
 else:
