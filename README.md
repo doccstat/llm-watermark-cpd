@@ -87,7 +87,7 @@ for method in gumbel transform; do
   for cpts in 0 1 2 4 9 19; do
     mkdir -p results/ml3-${cpts}changepoints-$method.p-detect
     for Tindex in $(seq 0 9); do
-      for k in 10 20 30 40 50; do
+      for k in 20; do
         for fixed_i in $(seq 0 499); do
           echo "bash ./detect-helper.sh $method $Tindex $cpts $k $fixed_i" >> detect-commands.sh
         done
@@ -96,18 +96,7 @@ for method in gumbel transform; do
   done
 done
 
-previous_job_id=""
-for offset in $(seq 0 1000 $(($(wc -l < detect-commands.sh) - 1000))); do
-    if [[ -z $previous_job_id ]]; then
-        job_id=$(sbatch detect.sh -- --offset=$offset | awk '{print $4}')
-        echo "Submitted first job with ID $job_id"
-    else
-        sleep 600
-        job_id=$(sbatch --dependency=afterany:$previous_job_id detect.sh -- --offset=$offset | awk '{print $4}')
-        echo "Submitted job with ID $job_id, dependent on job $previous_job_id"
-    fi
-    previous_job_id=$job_id
-done
+sbatch detect.sh
 ```
 
 #### Expected running time

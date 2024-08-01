@@ -17,33 +17,19 @@ module load JupyterLab/4.0.5-GCCcore-12.3.0
 
 cd /home/anthony.li/llm-watermark-cpd
 
-OFFSET=0
-
-# Parse command-line arguments
-for i in "$@"
-do
-case $i in
-    --offset=*)
-    OFFSET="${i#*=}"
-    shift # past argument=value
-    ;;
-    *)
-          # unknown option
-    ;;
-esac
-done
-
-echo "Offset is set to: $OFFSET"
 echo "Starting job with ID ${SLURM_JOB_ID} on ${SLURM_JOB_NODELIST}"
 
 export HF_HOME=/scratch/user/anthony.li/hf_cache
 
-# Calculate the actual task ID using the offset
-ACTUAL_TASK_ID=$((${SLURM_ARRAY_TASK_ID} + OFFSET))
+# Calculate the starting and ending line numbers for the commands
+start_command=$(( (${SLURM_ARRAY_TASK_ID} - 1) * 60 + 1 ))
+end_command=$((${SLURM_ARRAY_TASK_ID} * 60))
 
-command=$(sed -n "${ACTUAL_TASK_ID}p" detect-commands.sh)
+echo "Running tasks for commands from $start_command to $end_command"
 
-echo "Running task with ACTUAL_TASK_ID = $ACTUAL_TASK_ID"
-echo "Executing: $command"
-
-eval $command
+# Loop over the designated commands for this job
+for i in $(seq $start_command $end_command); do
+    command=$(sed -n "${i}p" detect-commands.sh)
+    echo "Executing command $i: $command"
+    eval "$command"
+done
