@@ -228,7 +228,6 @@ def test(tokens, seed, test_stats):
                                     k,
                                     seed,
                                     test_stats,
-                                    log_file,
                                     n_runs=args.n_runs,
                                     fixed_i=fixed_i)
 
