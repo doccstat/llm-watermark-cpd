@@ -43,12 +43,12 @@ def gpt_rewrite(text, key):
 
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4",  # You can specify other models here
+            model="gpt-4",
             messages=[
                 {"role": "system", "content": "Rewrite the provided text without changing the meaning and the order of the sentences."},
                 {"role": "user", "content": text}
             ]
         )
-        return response.choices[0].message['content']
+        return response['choices'][0]['message']['content']
     except Exception as e:
         return str(e)
