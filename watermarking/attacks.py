@@ -1,4 +1,5 @@
 import torch
+import openai
 
 
 def insertion_block_attack(tokens, starts, lengths, vocab_size, distribution=None):
@@ -35,3 +36,19 @@ def substitution_block_attack(tokens, starts, ends, vocab_size, distribution=Non
         tokens[start:end] = samples[:(end-start)]
 
     return tokens
+
+
+def gpt_rewrite(text, key):
+    openai.api_key = key
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4",  # You can specify other models here
+            messages=[
+                {"role": "system", "content": "Rewrite the provided text without changing the meaning and the order of the sentences."},
+                {"role": "user", "content": text}
+            ]
+        )
+        return response.choices[0].message['content']
+    except Exception as e:
+        return str(e)

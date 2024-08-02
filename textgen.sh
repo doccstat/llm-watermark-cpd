@@ -259,3 +259,24 @@ n=1000
 #     --insertion_blocks_start 75,150,325,350 \
 #     --insertion_blocks_length 25,25,25,25
 # done
+
+# 500 tokens with 4 change points
+# 1-100: watermark
+# 101-200: substitute
+# 201-300: watermark, 100: insert
+# 301-400: watermark
+python textgen.py \
+  --save results/ml3-4changepoints-gumbel.p \
+  --watermark_key_length $n \
+  --batch_size 10 \
+  --tokens_count 400 \
+  --model meta-llama/Meta-Llama-3-8B \
+  --seed 1 \
+  --T 10 \
+  --k 20 \
+  --method gumbel \
+  --substitution_blocks_start 100 \
+  --substitution_blocks_end 200 \
+  --insertion_blocks_start 300 \
+  --insertion_blocks_length 100 \
+  --gpt_rewrite_key ''

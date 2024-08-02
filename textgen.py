@@ -15,7 +15,7 @@ import copy
 import numpy as np
 
 from watermarking.generation import generate, generate_rnd
-from watermarking.attacks import insertion_block_attack, substitution_block_attack
+from watermarking.attacks import insertion_block_attack, substitution_block_attack, gpt_rewrite
 
 from watermarking.transform.sampler import transform_sampling
 from watermarking.transform.key import transform_key_func
@@ -59,6 +59,8 @@ parser.add_argument('--substitution_blocks_start', default="0", type=str)
 parser.add_argument('--substitution_blocks_end', default="0", type=str)
 parser.add_argument('--insertion_blocks_start', default="0", type=str)
 parser.add_argument('--insertion_blocks_length', default="0", type=str)
+
+parser.add_argument('--gpt_rewrite_key', default='', type=str)
 
 parser.add_argument('--kirch_gamma', default=0.25, type=float)
 parser.add_argument('--kirch_delta', default=1.0, type=float)
@@ -343,6 +345,10 @@ for itm in range(T):
         watermarked_sample, skip_special_tokens=True)
     if args.rt_translate:
         watermarked_sample = rt_translate(watermarked_sample)
+    if args.gpt_rewrite_key:
+        watermarked_sample = gpt_rewrite(
+            watermarked_sample, args.gpt_rewrite_key
+        )
     watermarked_sample = tokenizer.encode(watermarked_sample,
                                           return_tensors='pt',
                                           truncation=True,
