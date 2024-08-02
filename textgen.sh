@@ -17,7 +17,7 @@
 #SBATCH --mail-user=anthony.li@tamu.edu
 
 module purge
-module load JupyterLab/4.0.5-GCCcore-12.3.0
+module load Python/3.11.5-GCCcore-13.2.0
 
 cd /home/anthony.li/llm-watermark-cpd
 
