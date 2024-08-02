@@ -159,7 +159,7 @@ for method in gumbel; do
           n_runs_array=(99 249 499 749 999)
         else
           # Default n_runs value for other k values
-          n_runs_array=(1000)
+          n_runs_array=(999)
         fi
         # Loop over each n_runs in the array
         for n_runs in "${n_runs_array[@]}"; do
