@@ -110,6 +110,19 @@ Less than 10 GB per compute node.
 ### Change point analysis
 
 ```shell
+rm -f seedbs-commands.sh
+for template_index in $(seq 1 24); do
+  for prompt_index in $(seq 0 9); do
+    for seeded_interval_index in $(seq 1 47); do
+      echo "Rscript seedbs.R $template_index $prompt_index $seeded_interval_index" >> seedbs-commands.sh
+    done
+  done
+done
+
+sbatch seedbs.sh
+```
+
+```shell
 parallel -j 8 --progress Rscript analyze.R {1} {2} ::: $(seq 1 400 2801) ::: $(seq 400 400 3200)
 Rscript analyze.R 1 3200
 ```
@@ -130,3 +143,34 @@ Rscript analyze.R 1 5
 #### Expected memory usage
 
 Less than 10 GB per compute node.
+
+### Ablation study
+
+```shell
+rm -f ablation-commands.sh
+for method in gumbel; do
+  for cpts in 4; do
+    mkdir -p results/ml3-${cpts}changepoints-$method.p-detect
+    for Tindex in $(seq 0 4); do
+      # Loop to handle the k values and their corresponding n_runs
+      for k in 10 20 30 40 50; do
+        if [ $k -eq 20 ]; then
+          # Specific n_runs values for k = 20
+          n_runs_array=(99 249 499 749 999)
+        else
+          # Default n_runs value for other k values
+          n_runs_array=(1000)
+        fi
+        # Loop over each n_runs in the array
+        for n_runs in "${n_runs_array[@]}"; do
+          for fixed_i in $(seq 0 499); do
+            echo "bash ./ablation-helper.sh $method $Tindex $cpts $k $fixed_i $n_runs" >> ablation-commands.sh
+          done
+        done
+      done
+    done
+  done
+done
+
+sbatch ablation.sh
+```
