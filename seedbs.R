@@ -137,7 +137,7 @@ pvalue_vector <- rep(
 for (i in seq_len(length(pvalue_vector))) {
   filename <- sub("XXX", prompt_index, pvalue_files_templates[template_index])
   filename <-
-    sub("YYY", seeded_intervals[seeded_interval_index, 1] + i - 1, filename)
+    sub("YYY", seeded_intervals[seeded_interval_index, 1] + i - 1 - 1, filename)
   pvalue_vector[i] <- unlist(read.csv(filename, header = FALSE))
 }
 index_p_tilde <- segment_significance(pvalue_vector)
