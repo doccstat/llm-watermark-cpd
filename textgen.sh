@@ -266,7 +266,7 @@ n=1000
 # 201-300: watermark, 100: insert
 # 301-400: watermark
 python textgen.py \
-  --save results/ml3-4changepoints-gumbel.p \
+  --save results/ml3-4changepoints-rewrite-gumbel.p \
   --watermark_key_length $n \
   --batch_size 10 \
   --tokens_count 400 \
