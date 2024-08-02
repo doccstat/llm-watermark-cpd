@@ -174,7 +174,7 @@ for method in gumbel transform; do
   # 201-300: substitute
   # 301-500: watermark
   python textgen.py \
-    --save results/ml3-3changepoints-$method.p \
+    --save results/ml3-2changepoints-$method.p \
     --watermark_key_length $n \
     --batch_size 10 \
     --tokens_count 500 \
