@@ -345,10 +345,14 @@ for itm in range(T):
         watermarked_sample, skip_special_tokens=True)
     if args.rt_translate:
         watermarked_sample = rt_translate(watermarked_sample)
+    log_file.write(f'Attacked the sample {itm} with text: {watermarked_sample}\n')
+    log_file.flush()
     if args.gpt_rewrite_key:
         watermarked_sample = gpt_rewrite(
             watermarked_sample, args.gpt_rewrite_key
         )
+    log_file.write(f'Attacked the sample {itm} with text rewrite: {watermarked_sample}\n')
+    log_file.flush()
     watermarked_sample = tokenizer.encode(watermarked_sample,
                                           return_tensors='pt',
                                           truncation=True,
