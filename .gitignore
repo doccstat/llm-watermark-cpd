@@ -159,11 +159,11 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-results/*.csv
-results/*.p
-results/*.txt
+results/
+log/
 watermarking/transform/*.c
 watermarking/gumbel/*.c
 detect-commands.sh
 seedbs-commands.sh
 ablation-commands.sh
+results.tar.gz
