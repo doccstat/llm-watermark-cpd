@@ -1,5 +1,5 @@
 import torch
-import openai
+from openai import OpenAI
 
 
 def insertion_block_attack(tokens, starts, lengths, vocab_size, distribution=None):
@@ -39,10 +39,10 @@ def substitution_block_attack(tokens, starts, ends, vocab_size, distribution=Non
 
 
 def gpt_rewrite(text: str, key: str) -> str:
-    openai.api_key = key
+    client = OpenAI(api_key=key)
 
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "Rewrite the provided text without changing the meaning and the order of the sentences."},
