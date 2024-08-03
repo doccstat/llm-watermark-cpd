@@ -11,4 +11,4 @@ n_runs=$6
 
 n=1000
 
-python detect.py --token_file "results/ml3-${cpts}changepoints-${method}.p" --n ${n} --model meta-llama/Meta-Llama-3-8B --seed 1 --Tindex ${Tindex} --k ${k} --method ${method} --fixed_i ${fixed_i} --n_runs ${n_runs}
+python ablation.py --token_file "results/ml3-${cpts}changepoints-${method}.p" --n ${n} --model meta-llama/Meta-Llama-3-8B --seed 1 --Tindex ${Tindex} --k ${k} --method ${method} --fixed_i ${fixed_i} --n_runs ${n_runs}
