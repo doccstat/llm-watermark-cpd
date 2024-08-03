@@ -166,4 +166,5 @@ watermarking/gumbel/*.c
 detect-commands.sh
 seedbs-commands.sh
 ablation-commands.sh
+ablation-seedbs-commands.sh
 results.tar.gz
