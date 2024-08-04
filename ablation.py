@@ -16,6 +16,7 @@ from watermarking.gumbel.key import gumbel_key_func
 import argparse
 
 import csv
+import sys
 
 results = defaultdict(dict)
 
@@ -48,6 +49,19 @@ args = parser.parse_args()
 results['args'] = copy.deepcopy(args)
 
 fixed_i = None if args.fixed_i == -1 else args.fixed_i
+
+# Don't forget to remove the folder following the readme file,
+# if the experiment needs re-running.
+try:
+    with open(args.token_file + '-detect/' +
+              str(args.Tindex) + '-gumbel-' +
+              str(fixed_i) +
+              '-B-' + str(args.k) + '-T-' + str(args.n_runs) +
+              '.csv', 'r') as f:
+        reader = csv.reader(f)
+        sys.exit()
+except (FileNotFoundError, StopIteration):
+    pass
 
 log_file = open(
     'log/' + str(args.Tindex) + "-" +
