@@ -20,6 +20,7 @@ from watermarking.gumbel.key import gumbel_key_func
 import argparse
 
 import csv
+import sys
 
 results = defaultdict(dict)
 
@@ -52,6 +53,22 @@ args = parser.parse_args()
 results['args'] = copy.deepcopy(args)
 
 fixed_i = None if args.fixed_i == -1 else args.fixed_i
+
+try:
+    with open(args.token_file + '-detect/' +
+              str(args.Tindex) + '-gumbel-edit-' +
+              str(fixed_i) +
+              '.csv', 'r') as f:
+        reader1 = csv.reader(f)
+    with open(args.token_file + '-detect/' +
+              str(args.Tindex) + '-gumbel-' +
+              str(fixed_i) +
+              '.csv', 'r') as f:
+        reader2 = csv.reader(f)
+    if len(next(reader1)) == 1 and len(next(reader2)) == 1:
+        sys.exit()
+except (FileNotFoundError, StopIteration):
+    pass
 
 log_file = open(
     'log/' + str(args.Tindex) + "-" +
