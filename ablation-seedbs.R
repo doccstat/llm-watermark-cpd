@@ -126,8 +126,14 @@ for (pvalue_files_template in pvalue_files_templates) {
   }
 }
 
+args <- commandArgs(trailingOnly = TRUE)
+template_index <- as.integer(args[1])  # Start from 1
+prompt_index <- as.integer(args[2])  # Start from 0
+seeded_interval_index <- as.integer(args[3])  # Start from 1
+
 # The parameter `k` used in `textgen`
-segment_length <- 20
+segment_length <-
+  as.integer(gsub('^.*B-|-T.*$', '', pvalue_files_templates[template_index]))
 seeded_intervals_minimum <- 50
 token_count <- 500
 seeded_intervals <- get_seeded_intervals(
@@ -139,14 +145,9 @@ segment_length_cutoff <-
 seeded_intervals <- seeded_intervals[segment_length_cutoff, ]
 seeded_intervals <- seeded_intervals + segment_length / 2
 
-args <- commandArgs(trailingOnly = TRUE)
-template_index <- as.integer(args[1])  # Start from 1
-prompt_index <- as.integer(args[2])  # Start from 0
-seeded_interval_index <- as.integer(args[3])  # Start from 1
-
 filename <- sub("XXX", prompt_index, pvalue_files_templates[template_index])
 filename <- sub("YYY", paste0("SeedBS-", seeded_interval_index), filename)
-if (!file.exists(filename)) {
+if (seeded_interval_index <= nrow(seeded_intervals) && !file.exists(filename)) {
   pvalue_vector <- rep(
     NA,
     seeded_intervals[seeded_interval_index, 2] -
