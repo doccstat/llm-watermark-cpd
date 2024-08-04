@@ -115,7 +115,7 @@ segment_significance <- function(pvalues) {
   c(original_ks_statistic[1], mean(p_tilde))
 }
 
-prompt_count <- 10
+prompt_count <- 5
 pvalue_files <- NULL
 
 for (pvalue_files_template in pvalue_files_templates) {
