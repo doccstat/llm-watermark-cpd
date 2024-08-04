@@ -173,4 +173,15 @@ for method in gumbel; do
 done
 
 sbatch ablation.sh
+
+rm -f ablation-seedbs-commands.sh
+for template_index in $(seq 1 9); do
+  for prompt_index in $(seq 0 4); do
+    for seeded_interval_index in $(seq 1 47); do
+      echo "Rscript ablation-seedbs.R $template_index $prompt_index $seeded_interval_index" >> ablation-seedbs-commands.sh
+    done
+  done
+done
+
+sbatch ablation-seedbs.sh
 ```
