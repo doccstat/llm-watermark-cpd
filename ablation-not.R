@@ -23,7 +23,9 @@ pvalue_files_templates <- NULL
 for (model_index in seq_along(models)) {
   for (experiment_index in seq_along(experiment_settings)) {
     for (generation_index in seq_along(generation_methods)) {
-      for (block_size_permutation_index in seq_len(nrow(block_size_permutation_pair))) {
+      for (block_size_permutation_index in seq_len(
+        nrow(block_size_permutation_pair)
+      )) {
         pvalue_files_templates <- c(pvalue_files_templates, paste0(
           folder,
           models_folders_prefix[model_index],
@@ -43,6 +45,33 @@ for (model_index in seq_along(models)) {
     }
   }
 }
+
+filenames_to_settings <- list(
+  "B-20-T-99",
+  "B-20-T-249",
+  "B-20-T-499",
+  "B-20-T-749",
+  "B-20-T-999",
+  "B-10-T-999",
+  "B-30-T-999",
+  "B-40-T-999",
+  "B-50-T-999"
+)
+filenames_to_settings <- rep(filenames_to_settings, length(models))
+names(filenames_to_settings) <- pvalue_files_templates
+true_change_points_list <- list(
+  c(100, 200, 300, 400),
+  c(100, 200, 300, 400),
+  c(100, 200, 300, 400),
+  c(100, 200, 300, 400),
+  c(100, 200, 300, 400),
+  c(100, 200, 300, 400),
+  c(100, 200, 300, 400),
+  c(100, 200, 300, 400),
+  c(100, 200, 300, 400)
+)
+true_change_points_list <- rep(true_change_points_list, length(models))
+names(true_change_points_list) <- pvalue_files_templates
 
 significance_permutation_count <- 999
 
@@ -126,31 +155,27 @@ for (pvalue_files_template in pvalue_files_templates) {
   }
 }
 
-args <- commandArgs(trailingOnly = TRUE)
-template_index <- as.integer(args[1])  # Start from 1
-prompt_index <- as.integer(args[2])  # Start from 0
-seeded_interval_index <- as.integer(args[3])  # Start from 1
-
-# The parameter `k` used in `textgen`
-segment_length <-
-  as.integer(gsub("^.*B-|-T.*$", "", pvalue_files_templates[template_index]))
-seeded_intervals_minimum <- 50
-token_count <- 500
-seeded_intervals <- get_seeded_intervals(
-  token_count - segment_length,
-  decay = sqrt(2), unique.int = TRUE
-)
-segment_length_cutoff <-
-  seeded_intervals[, 2] - seeded_intervals[, 1] >= seeded_intervals_minimum
-seeded_intervals <- seeded_intervals[segment_length_cutoff, ]
-seeded_intervals <- seeded_intervals + segment_length / 2
-
-# The above code should be the same as the one in `ablation-seedbs.R`.
-
 seeded_intervals_results <- list()
-for (pvalue_files_template_index in seq_along(pvalue_files_templates)) {
+pvalue_matrices <- list()
+for (template_index in seq_along(pvalue_files_templates)) {  # nolint
+  # The parameter `k` used in `textgen`
+  segment_length <-
+    as.integer(gsub("^.*B-|-T.*$", "", pvalue_files_templates[template_index]))
+  seeded_intervals_minimum <- 50
+  token_count <- 500
+  seeded_intervals <- get_seeded_intervals(
+    token_count - segment_length,
+    decay = sqrt(2), unique.int = TRUE
+  )
+  segment_length_cutoff <-
+    seeded_intervals[, 2] - seeded_intervals[, 1] >= seeded_intervals_minimum
+  seeded_intervals <- seeded_intervals[segment_length_cutoff, ]
+  seeded_intervals <- seeded_intervals + segment_length / 2
+
+  # The above code should be the same as the one in `ablation-seedbs.R`.
+
   seeded_intervals_results[[
-    pvalue_files_templates[[pvalue_files_template_index]]
+    pvalue_files_templates[[template_index]]
   ]] <- list()
   for (prompt_index in seq_len(prompt_count)) {
     seeded_intervals_df <- data.frame(
@@ -164,9 +189,10 @@ for (pvalue_files_template_index in seq_along(pvalue_files_templates)) {
       filename <- sub(
         "XXX",
         prompt_index - 1,
-        pvalue_files_templates[pvalue_files_template_index]
+        pvalue_files_templates[template_index]
       )
-      filename <- sub("YYY", paste0("SeedBS-", seeded_interval_index), filename)
+      filename <-
+        sub("YYY", paste0("SeedBS-", seeded_interval_index), filename)
       seeded_intervals_df[
         seeded_interval_index, c("index_within_segment", "significance")
       ] <- c(read.csv(filename, header = TRUE))$x
@@ -174,14 +200,11 @@ for (pvalue_files_template_index in seq_along(pvalue_files_templates)) {
     seeded_intervals_df$change_point_index <-
       seeded_intervals_df$index_within_segment + seeded_intervals_df$from - 1
     seeded_intervals_results[[
-      pvalue_files_templates[[pvalue_files_template_index]]
+      pvalue_files_templates[[template_index]]
     ]][[prompt_index]] <- seeded_intervals_df
   }
-}
 
-pvalue_matrices <- list()
-for (pvalue_files_template_index in seq_along(pvalue_files_templates)) {
-  pvalue_matrices[[pvalue_files_templates[[pvalue_files_template_index]]]] <-
+  pvalue_matrices[[pvalue_files_templates[[template_index]]]] <-
     matrix(
       NA,
       nrow = prompt_count,
@@ -193,219 +216,105 @@ for (pvalue_files_template_index in seq_along(pvalue_files_templates)) {
       filename <- sub(
         "XXX",
         prompt_index - 1,
-        pvalue_files_templates[pvalue_files_template_index]
+        pvalue_files_templates[template_index]
       )
       filename <- sub("YYY", i - 1, filename)
       pvalue_vector[i] <- unlist(read.csv(filename, header = FALSE))
     }
     pvalue_matrices[[
-      pvalue_files_templates[[pvalue_files_template_index]]
+      pvalue_files_templates[[template_index]]
     ]][prompt_index, ] <- pvalue_vector
   }
 }
 
-aggregated_filenames <- NULL
-for (model_index in seq_along(models)) {
-  for (experiment_index in seq_along(experiment_settings)) {
-    for (generation_index in seq_along(generation_methods)) {
-      for (distance_index in seq_along(c("", "-edit"))) {
-        aggregated_filenames <- c(aggregated_filenames, paste0(
-          folder,
-          models_folders_prefix[model_index],
-          "-",
-          experiment_settings[experiment_index],
-          "-",
-          generation_methods[generation_index],
-          c("", "-edit")[distance_index],
-          ".p"
-        ))
-      }
-    }
-  }
-}
-
-for (pvalue_files_template_index in seq_along(pvalue_files_templates)) {
-  pvalue_matrix <- data.frame(
-    t(pvalue_matrices[[pvalue_files_templates[pvalue_files_template_index]]])
-  )
-  colnames(pvalue_matrix) <- paste0("Prompt", seq_len(ncol(pvalue_matrix)))
-  pvalue_matrix$time <- seq_len(nrow(pvalue_matrix))
-  df <- reshape2::melt(pvalue_matrix, id.vars = "time", value.name = "Value")
-
-  ggplot2::ggplot(df, ggplot2::aes(x = time, y = Value, color = variable)) +
-    ggplot2::geom_line() +
-    ggplot2::geom_segment(
-      ggplot2::aes(
-        xend = time,
-        yend = 0,
-        color = variable
-      )
-    ) +
-    ggplot2::facet_wrap(~variable) +
-    ggplot2::theme_minimal() +
-    ggplot2::labs(x = "Index", y = "P-Value") +
-    ggplot2::theme(legend.position = "none")
-  ggplot2::ggsave(
-    paste0(aggregated_filenames[pvalue_files_template_index], "-pvalue.pdf"),
-    width = 15,
-    height = 15
-  )
-}
-
-# for (prompt_index in 1:10) {
-#   seeded_intervals_with_ptilde <-
-#     seeded_intervals_results[[pvalue_files_template]][[prompt_index]]
-#   significant_indices <-
-#     seeded_intervals_with_ptilde$significance <= not_threshold
-#   potential_change_points <-
-#     seeded_intervals_with_ptilde[significant_indices, ]
-#   result_df <- potential_change_points[FALSE, ]
-#   while (nrow(potential_change_points) > 0) {
-#     min_segment_index <- which.min(potential_change_points$segment_length)
-#     change_point <- potential_change_points[min_segment_index, ]
-#     result_df <- rbind(result_df, change_point)
-#     rest_potential <-
-#       potential_change_points$from > change_point$change_point_index
-#     rest_potential <- rest_potential | (
-#       potential_change_points$to < change_point$change_point_index
-#     )
-#     potential_change_points <- potential_change_points[rest_potential, ]
-#   }
-#   result_df <- result_df[order(result_df$change_point_index), ]
-#   print(result_df)
-# }
-
-for (model_index in seq_along(models)) { # nolint
-  false_positive_df <- data.frame(matrix(NA, 0, 3))
-  rand_index_df <- data.frame(matrix(NA, 0, 3))
-  for (not_threshold in c(0.05, 0.01, 0.005, 0.001)) { # nolint
+model_index <- 1
+rand_index_df <- data.frame(matrix(NA, 0, 3))
+for (not_threshold in c(0.05, 0.01, 0.005, 0.001)) { # nolint
+  for (
+    pvalue_files_template in pvalue_files_templates[
+      length(filenames_to_settings) * (model_index - 1) +
+        seq_along(filenames_to_settings)
+    ]
+  ) {
     for (
-      pvalue_files_template in pvalue_files_templates[
-        length(filenames_to_settings) * (model_index - 1) + 1:length(filenames_to_settings)
-      ]
+      prompt_index in seq_len(
+        nrow(pvalue_matrices[[pvalue_files_template]])
+      )
     ) {
-      for (
-        prompt_index in seq_len(nrow(pvalue_matrices[[pvalue_files_template]]))
-      ) {
-        seeded_intervals_with_ptilde <-
-          seeded_intervals_results[[pvalue_files_template]][[prompt_index]]
-        significant_indices <-
-          seeded_intervals_with_ptilde$significance <= not_threshold
-        potential_change_points <-
-          seeded_intervals_with_ptilde[significant_indices, ]
-        result_df <- potential_change_points[FALSE, ]
-        while (nrow(potential_change_points) > 0) {
-          min_segment_index <- which.min(potential_change_points$segment_length)
-          change_point <- potential_change_points[min_segment_index, ]
-          result_df <- rbind(result_df, change_point)
-          rest_potential <-
-            potential_change_points$from > change_point$change_point_index
-          rest_potential <- rest_potential | (
-            potential_change_points$to < change_point$change_point_index
-          )
-          potential_change_points <- potential_change_points[rest_potential, ]
-        }
-        result_df <- result_df[order(result_df$change_point_index), ]
-
-        if (pvalue_files_template %in% filenames_without_changepoint) {
-          false_positive_df <- rbind.data.frame(
-            false_positive_df,
-            cbind(
-              nrow(result_df),
-              filenames_to_settings[[pvalue_files_template]],
-              not_threshold
-            )
-          )
-        } else {
-          rand_index_df <- rbind.data.frame(
-            rand_index_df,
-            cbind(
-              fossil::rand.index(
-                rep(
-                  seq_len(length(result_df$change_point_index) + 1),
-                  times = diff(c(
-                    0,
-                    result_df$change_point_index,
-                    ncol(pvalue_matrices[[pvalue_files_template]])
-                  ))
-                ),
-                rep(
-                  seq_len(
-                    length(true_change_points_list[[pvalue_files_template]]) + 1
-                  ),
-                  times = diff(c(
-                    0,
-                    true_change_points_list[[pvalue_files_template]],
-                    ncol(pvalue_matrices[[pvalue_files_template]])
-                  ))
-                )
-              ),
-              filenames_to_settings[[pvalue_files_template]],
-              not_threshold
-            )
-          )
-        }
+      seeded_intervals_with_ptilde <-
+        seeded_intervals_results[[pvalue_files_template]][[prompt_index]]
+      significant_indices <-
+        seeded_intervals_with_ptilde$significance <= not_threshold
+      potential_change_points <-
+        seeded_intervals_with_ptilde[significant_indices, ]
+      result_df <- potential_change_points[FALSE, ]
+      while (nrow(potential_change_points) > 0) {
+        min_segment_index <-
+          which.min(potential_change_points$segment_length)
+        change_point <- potential_change_points[min_segment_index, ]
+        result_df <- rbind(result_df, change_point)
+        rest_potential <-
+          potential_change_points$from > change_point$change_point_index
+        rest_potential <- rest_potential | (
+          potential_change_points$to < change_point$change_point_index
+        )
+        potential_change_points <- potential_change_points[rest_potential, ]
       }
+      result_df <- result_df[order(result_df$change_point_index), ]
+
+      rand_index_df <- rbind.data.frame(
+        rand_index_df,
+        cbind(
+          fossil::rand.index(
+            rep(
+              seq_len(length(result_df$change_point_index) + 1),
+              times = diff(c(
+                0,
+                result_df$change_point_index,
+                ncol(pvalue_matrices[[pvalue_files_template]])
+              ))
+            ),
+            rep(
+              seq_len(
+                length(true_change_points_list[[pvalue_files_template]]) + 1
+              ),
+              times = diff(c(
+                0,
+                true_change_points_list[[pvalue_files_template]],
+                ncol(pvalue_matrices[[pvalue_files_template]])
+              ))
+            )
+          ),
+          filenames_to_settings[[pvalue_files_template]],
+          not_threshold
+        )
+      )
     }
   }
-  colnames(false_positive_df) <- c(
-    "ChangePointCount",
-    "Setting",
-    "Threshold"
-  )
-  colnames(rand_index_df) <- c(
-    "RandIndex",
-    "Setting",
-    "Threshold"
-  )
-  false_positive_df$ChangePointCount <-
-    as.integer(false_positive_df$ChangePointCount)
-  rand_index_df$RandIndex <- as.numeric(rand_index_df$RandIndex)
-
-  ggplot2::ggplot(false_positive_df) +
-    ggplot2::geom_boxplot(
-      ggplot2::aes(
-        x = Threshold,
-        y = ChangePointCount,
-        fill = Setting
-      )
-    ) +
-    ggplot2::labs(
-      x = "Threshold",
-      y = "Change Point Count",
-      fill = "Setting"
-    ) +
-    ggplot2::theme_minimal() +
-    ggplot2::theme(
-      legend.position = c(0.5, 0.9),
-      legend.direction = "horizontal",
-      legend.title = ggplot2::element_blank()
-    )
-  ggplot2::ggsave(
-    paste0(
-      "results/", models_folders_prefix[model_index], "-false_positives.pdf"
-    ),
-    width = 8,
-    height = 4
-  )
-
-  ggplot2::ggplot(rand_index_df) +
-    ggplot2::geom_boxplot(
-      ggplot2::aes(
-        x = Threshold,
-        y = RandIndex,
-        fill = Setting
-      )
-    ) +
-    ggplot2::labs(
-      x = "Threshold",
-      y = "Rand Index",
-      fill = "Setting"
-    ) +
-    ggplot2::theme_minimal()
-  ggplot2::ggsave(
-    paste0("results/", models_folders_prefix[model_index], "-rand_index.pdf"),
-    width = 10,
-    height = 4
-  )
 }
+colnames(rand_index_df) <- c(
+  "RandIndex",
+  "Setting",
+  "Threshold"
+)
+rand_index_df$RandIndex <- as.numeric(rand_index_df$RandIndex)
+
+ggplot2::ggplot(rand_index_df) +
+  ggplot2::geom_boxplot(
+    ggplot2::aes(
+      x = Threshold,
+      y = RandIndex,
+      fill = Setting
+    )
+  ) +
+  ggplot2::labs(
+    x = "Threshold",
+    y = "Rand Index",
+    fill = "Setting"
+  ) +
+  ggplot2::theme_minimal()
+ggplot2::ggsave(
+  paste0("results/", models_folders_prefix[model_index], "-rand_index.pdf"),
+  width = 10,
+  height = 4
+)
