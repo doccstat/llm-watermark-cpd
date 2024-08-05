@@ -314,7 +314,7 @@ elif args.method == "kirchenbauer":
 else:
     raise
 
-watermarked_sample = watermarked_samples[Tindex, :]
+watermarked_sample = watermarked_samples
 
 t0 = time.time()
 pval = test(watermarked_sample, seeds[Tindex], test_stats)
