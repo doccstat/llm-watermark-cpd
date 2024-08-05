@@ -317,7 +317,7 @@ else:
 watermarked_sample = watermarked_samples
 
 t0 = time.time()
-pval = test(watermarked_sample, seeds[Tindex], test_stats)
+pval = test(watermarked_sample, seeds, test_stats)
 log_file.write(f'Ran watermarked test in (t = {time.time()-t0} seconds)\n')
 log_file.flush()
 for distance_index in range(len(test_stats)):
