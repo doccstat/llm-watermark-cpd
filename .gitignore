@@ -167,5 +167,6 @@ detect-commands.sh
 seedbs-commands.sh
 ablation-commands.sh
 ablation-seedbs-commands.sh
+extra-seedbs-commands.sh
 results.tar.gz
 .Rhistory
