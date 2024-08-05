@@ -94,10 +94,10 @@ if args.cpts > 0:
     if len(cpts) % 2 == 1:
         args.substitution_blocks_end += ',' + str(args.tokens_count)
 
-cpts_save = open(args.save + '-cpts.csv', "w")
-cpts_writer = csv.writer(cpts_save, delimiter=",")
-cpts_writer.writerow(cpts)
-cpts_save.close()
+    cpts_save = open(args.save + '-cpts.csv', "w")
+    cpts_writer = csv.writer(cpts_save, delimiter=",")
+    cpts_writer.writerow(cpts)
+    cpts_save.close()
 
 results['args'] = copy.deepcopy(args)
 
@@ -206,7 +206,8 @@ if args.rt_translate:
 seeds = torch.randint(2**32, (T,))
 seeds_save = open(args.save + '-seeds.csv', 'w')
 seeds_writer = csv.writer(seeds_save, delimiter=",")
-seeds_writer.writerow(np.asarray(seeds.squeeze().numpy()))
+# seeds_writer.writerow(np.asarray(seeds.squeeze().numpy()))
+seeds_writer.writerow(np.asarray(seeds.squeeze().numpy()).tolist())
 seeds_save.close()
 
 if args.method == "gumbel":
