@@ -157,6 +157,7 @@ for (pvalue_files_template in pvalue_files_templates) {
 
 seeded_intervals_results <- list()
 pvalue_matrices <- list()
+time_matrices <- list()
 for (template_index in seq_along(pvalue_files_templates)) {  # nolint
   # The parameter `k` used in `textgen`
   segment_length <-
@@ -210,8 +211,15 @@ for (template_index in seq_along(pvalue_files_templates)) {  # nolint
       nrow = prompt_count,
       ncol = token_count
     )
+  time_matrices[[pvalue_files_templates[[template_index]]]] <-
+    matrix(
+      NA,
+      nrow = prompt_count,
+      ncol = token_count
+    )
   for (prompt_index in seq_len(prompt_count)) {
     pvalue_vector <- rep(NA, token_count)
+    time_vector <- rep(NA, token_count)
     for (i in seq_len(token_count)) {
       filename <- sub(
         "XXX",
@@ -220,10 +228,16 @@ for (template_index in seq_along(pvalue_files_templates)) {  # nolint
       )
       filename <- sub("YYY", i - 1, filename)
       pvalue_vector[i] <- unlist(read.csv(filename, header = FALSE))
+      time_file <- file(sub(".csv", "-time.txt", filename), open = "r")
+      time_vector[i] <- as.numeric(readLines(time_file)[1])
+      close(time_file)
     }
     pvalue_matrices[[
       pvalue_files_templates[[template_index]]
     ]][prompt_index, ] <- pvalue_vector
+    time_matrices[[
+      pvalue_files_templates[[template_index]]
+    ]][prompt_index, ] <- time_vector
   }
 }
 
