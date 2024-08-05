@@ -228,8 +228,8 @@ for batch in range(n_batches):
                                             return_tensors='pt',
                                             truncation=True,
                                             max_length=2048)[0]
-    watermarked_samples.append(generate_watermark2(
-        torch.vstack([watermarked_samples]), seeds[idx], 100)[:, prompt_tokens:])
+    watermarked_samples = [generate_watermark2(
+        torch.vstack([watermarked_samples]), seeds[idx], 100)[:, prompt_tokens:]]
 
     pbar.update(1)
     log_file.write(f'Generated batch 0 in (t = {time()-t1} seconds)\n')
