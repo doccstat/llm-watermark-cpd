@@ -141,10 +141,7 @@ n = args.watermark_key_length
 seeds = torch.randint(2**32, (T,))
 seeds_save = open(args.save + '-seeds.csv', 'w')
 seeds_writer = csv.writer(seeds_save, delimiter=",")
-# seeds_writer.writerow(np.asarray(seeds.squeeze().numpy()))
-seeds_list = np.asarray(seeds.squeeze().numpy()).tolist()
-if not isinstance(seeds_list, list):
-    seeds_list = [seeds_list]
+seeds_writer.writerow(np.asarray(seeds.numpy()))
 seeds_save.close()
 
 
