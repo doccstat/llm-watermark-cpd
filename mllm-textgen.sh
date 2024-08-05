@@ -2,15 +2,15 @@
 
 #SBATCH --job-name=mllm-textgen
 #SBATCH --nodes=1
-#SBATCH --ntasks=128
-#SBATCH --ntasks-per-node=128
+#SBATCH --ntasks=100
+#SBATCH --ntasks-per-node=100
 #SBATCH --cpus-per-task=1
 
 #SBATCH --time=1-00:00:00
 #SBATCH --partition=gpu,xgpu
 #SBATCH --gres=gpu:a30:3
 
-#SBATCH --mem=128GB
+#SBATCH --mem=100GB
 #SBATCH --output=/home/anthony.li/out/mllm-textgen.%j.out
 #SBATCH --error=/home/anthony.li/out/mllm-textgen.%j.err
 #SBATCH --mail-type=ALL
