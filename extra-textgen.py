@@ -60,7 +60,7 @@ parser.add_argument('--meaningful', action='store_true')
 
 # comma separated values
 parser.add_argument('--substitution_blocks_start', default="0", type=str)
-parser.add_argument('--substitution_blocks_end', default="0", types=str)
+parser.add_argument('--substitution_blocks_end', default="0", type=str)
 parser.add_argument('--insertion_blocks_start', default="0", type=str)
 parser.add_argument('--insertion_blocks_length', default="0", type=str)
 
