@@ -284,7 +284,6 @@ prompt_save.close()
 prompts = torch.vstack(prompts)
 
 null_samples = []
-watermarked_samples = []
 
 t1 = time()
 pbar = tqdm(total=n_batches)
@@ -306,8 +305,10 @@ for batch in range(n_batches):
             watermarked_samples[idx], 100+buffer_tokens, model)
         watermarked_samples = generate_watermark(
             watermarked_samples[idx], seeds[idx], 100)
-        watermarked_samples.append(generate_rnd(
-            watermarked_samples[idx], 100+buffer_tokens, model)[:, prompt_tokens:])
+        watermarked_samples = [
+            generate_rnd(
+                watermarked_samples[idx], 100+buffer_tokens, model)[:, prompt_tokens:]
+        ]
 
     pbar.update(1)
     log_file.write(f'Generated batch {batch} in (t = {time()-t1} seconds)\n')
