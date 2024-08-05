@@ -1,13 +1,13 @@
 #!/bin/bash
 
-#SBATCH --job-name=ablation-seedbs
+#SBATCH --job-name=extra-seedbs
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --time=1-00:00:00
 #SBATCH --partition=medium,long,xlong
 #SBATCH --mem-per-cpu=1GB
-#SBATCH --output=/home/anthony.li/out/ablation-seedbs.%A.%a.out
-#SBATCH --error=/home/anthony.li/out/ablation-seedbs.%A.%a.err
+#SBATCH --output=/home/anthony.li/out/extra-seedbs.%A.%a.out
+#SBATCH --error=/home/anthony.li/out/extra-seedbs.%A.%a.err
 #SBATCH --mail-type=FAIL,TIME_LIMIT
 #SBATCH --mail-user=anthony.li@tamu.edu
 #SBATCH --array=1-1000
@@ -42,7 +42,7 @@ echo "Running tasks for commands from $start_command to $end_command"
 
 # Loop over the designated commands for this job
 for i in $(seq $start_command $end_command); do
-    command=$(sed -n "${i}p" ablation-seedbs-commands.sh)
+    command=$(sed -n "${i}p" extra-seedbs-commands.sh)
     echo "Executing command $i: $command"
     eval "$command"
 done
