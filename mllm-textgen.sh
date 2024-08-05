@@ -38,7 +38,7 @@ python mllm-textgen.py \
   --watermark_key_length $n \
   --tokens_count 300 \
   --model1 meta-llama/Meta-Llama-3-8B \
-  --model2 mistralai/Mistral-Nemo-Instruct-2407 \
+  --model2 openai-community/gpt2 \
   --seed 1 \
   --k 20 \
   --method gumbel
