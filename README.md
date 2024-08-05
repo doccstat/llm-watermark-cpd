@@ -190,6 +190,14 @@ sbatch ablation-seedbs.sh
 
 ```shell
 sbatch extra-textgen.sh
+for cpts in 3 4 6 8 9 12; do
+  for texts in 1 2 3 4 5; do
+    mkdir -p results/ml3-random-${cpts}cpts-text${texts}-gumbel.p-detect
+  done
+done
+mkdir -p results/ml3-concat-text5-gumbel.p-detect
+mkdir -p results/ml3-concat-french-text5-gumbel.p-detect
+
 sbatch extra-detect.sh
 
 rm -f extra-seedbs-commands.sh
