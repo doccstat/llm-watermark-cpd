@@ -67,7 +67,7 @@ try:
         reader2 = csv.reader(f)
     if len(next(reader1)) == 1 and len(next(reader2)) == 1:
         sys.exit()
-except (FileNotFoundError, StopIteration):
+except:
     pass
 
 log_file = open(
