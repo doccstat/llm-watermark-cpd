@@ -291,8 +291,10 @@ for batch in range(n_batches):
     if not args.meaningful:
         null_samples.append(generate_rnd(
             prompts[idx], new_tokens+buffer_tokens, model)[:, prompt_tokens:])
-        watermarked_samples = generate_watermark(
-            prompts[idx], seeds[idx], new_tokens)[:, prompt_tokens:]
+        watermarked_samples = [
+            generate_watermark(
+                prompts[idx], seeds[idx], new_tokens)[:, prompt_tokens:]
+        ]
     else:
         null_samples.append(generate_rnd(
             prompts[idx], 100+buffer_tokens, model))
