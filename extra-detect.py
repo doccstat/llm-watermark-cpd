@@ -178,20 +178,20 @@ if args.method == "transform":
 
 elif args.method == "gumbel":
     test_stats = []
-    def dist1(x, y): return gumbel_edit_score(x, y, gamma=args.gamma)
+    # def dist1(x, y): return gumbel_edit_score(x, y, gamma=args.gamma)
 
-    def test_stat1(tokens, n, k, generator, vocab_size, null=False): return phi(
-        tokens=tokens,
-        n=n,
-        k=k,
-        generator=generator,
-        key_func=gumbel_key_func,
-        vocab_size=vocab_size,
-        dist=dist1,
-        null=null,
-        normalize=False
-    )
-    test_stats.append(test_stat1)
+    # def test_stat1(tokens, n, k, generator, vocab_size, null=False): return phi(
+    #     tokens=tokens,
+    #     n=n,
+    #     k=k,
+    #     generator=generator,
+    #     key_func=gumbel_key_func,
+    #     vocab_size=vocab_size,
+    #     dist=dist1,
+    #     null=null,
+    #     normalize=False
+    # )
+    # test_stats.append(test_stat1)
     def dist2(x, y): return gumbel_score(x, y)
 
     def test_stat2(tokens, n, k, generator, vocab_size, null=False): return phi(
@@ -280,12 +280,12 @@ if args.method == "transform":
     #                       'w'))
     # csvWriters.append(csv.writer(csv_saves[-1], delimiter=','))
 elif args.method == "gumbel":
-    csv_saves.append(open(args.token_file + '-detect/' +
-                     str(args.Tindex) + '-gumbel-edit-' +
-                     str(fixed_i) +
-                     '.csv',
-                     'w'))
-    csvWriters.append(csv.writer(csv_saves[-1], delimiter=','))
+    # csv_saves.append(open(args.token_file + '-detect/' +
+    #                  str(args.Tindex) + '-gumbel-edit-' +
+    #                  str(fixed_i) +
+    #                  '.csv',
+    #                  'w'))
+    # csvWriters.append(csv.writer(csv_saves[-1], delimiter=','))
     csv_saves.append(open(args.token_file + '-detect/' +
                      str(args.Tindex) + '-gumbel-' +
                      str(fixed_i) +
