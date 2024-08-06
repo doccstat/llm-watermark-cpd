@@ -119,7 +119,7 @@ except:
     dataset = load_dataset("allenai/c4", "realnewslike",
                            split="train", streaming=True)
 
-T = 1                  # number of prompts/generations
+T = 5                  # number of prompts/generations
 n_batches = int(np.ceil(T / args.batch_size))  # number of batches
 prompt_tokens = args.prompt_tokens      # minimum prompt length
 new_tokens = args.tokens_count
@@ -135,7 +135,7 @@ n = args.watermark_key_length
 seeds = torch.randint(2**32, (T,))
 seeds_save = open(args.save + '-seeds.csv', 'w')
 seeds_writer = csv.writer(seeds_save, delimiter=",")
-seeds_writer.writerow(np.asarray(seeds.numpy()))
+seeds_writer.writerow(np.asarray(seeds.squeeze().numpy()))
 seeds_save.close()
 
 
@@ -203,10 +203,9 @@ null_samples = []
 watermarked_samples = []
 
 t1 = time()
-pbar = tqdm(total=n_batches)
-for batch in range(n_batches):
-    idx = torch.arange(batch * args.batch_size,
-                       min(T, (batch + 1) * args.batch_size))
+pbar = tqdm(total=T)
+for batch in range(T):
+    idx = [batch]
 
     null_samples.append(generate_rnd(
         prompts[idx], 100+buffer_tokens, model1))
