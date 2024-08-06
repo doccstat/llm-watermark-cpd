@@ -54,6 +54,7 @@ results['args'] = copy.deepcopy(args)
 
 fixed_i = None if args.fixed_i == -1 else args.fixed_i
 
+existing_file_len = 0
 try:
     existing_file_len = np.genfromtxt(args.token_file + '-detect/' +
                                       str(args.Tindex) + '-gumbel-' +
