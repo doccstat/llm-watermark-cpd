@@ -47,17 +47,11 @@ parser.add_argument('--watermark_key_length', default=256, type=int)
 
 parser.add_argument('--prompt_tokens', default=50, type=int)
 parser.add_argument('--buffer_tokens', default=20, type=int)
-parser.add_argument('--n_runs', default=5000, type=int)
-parser.add_argument('--max_seed', default=100000, type=int)
 parser.add_argument('--offset', action='store_true')
 
-parser.add_argument('--gamma', default=0.4, type=float)
 parser.add_argument('--nowatermark', action='store_true')
 
 # comma separated values
-parser.add_argument('--substitution_blocks_start', default="0", type=str)
-parser.add_argument('--substitution_blocks_end', default="0", type=str)
-parser.add_argument('--insertion_blocks_start', default="0", type=str)
 parser.add_argument('--insertion_blocks_length', default="0", type=str)
 
 parser.add_argument('--kirch_gamma', default=0.25, type=float)
@@ -274,16 +268,12 @@ log_file.write(
     f'Saved null samples and probs in (t = {time()-t1} seconds)\n')
 log_file.flush()
 
-# Attack the watermarked texts and store a copy appended with the
-# prompt-extracting prompt in `icl_samples`.
-attacked_tokens_save = open(
-    args.save + "-attacked-tokens.csv", "w")
-attacked_tokens_writer = csv.writer(attacked_tokens_save, delimiter=",")
-pi_save = None
-pi_writer = None
-if args.method == "transform":
-    pi_save = open(args.save + "-pi.csv", "w")
-    pi_writer = csv.writer(pi_save, delimiter=",")
+attacked_tokens_save1 = open(
+    args.save + "-attacked-tokens-ml3.csv", "w")
+attacked_tokens_writer1 = csv.writer(attacked_tokens_save1, delimiter=",")
+attacked_tokens_save2 = open(
+    args.save + "-attacked-tokens-gpt.csv", "w")
+attacked_tokens_writer2 = csv.writer(attacked_tokens_save2, delimiter=",")
 
 pbar = tqdm(total=T)
 for itm in range(T):
@@ -294,6 +284,13 @@ for itm in range(T):
         f'Attacked the sample {itm} with text: {watermarked_sample}\n'
     )
     log_file.flush()
+    tokenizer1_ed = tokenizer1.encode(
+        watermarked_sample,
+        return_tensors='pt',
+        truncation=True,
+        max_length=2048
+    )[0]
+    attacked_tokens_writer1.writerow(np.asarray(tokenizer1_ed.numpy()))
     watermarked_sample = tokenizer2.encode(watermarked_sample,
                                            return_tensors='pt',
                                            truncation=True,
@@ -306,7 +303,7 @@ for itm in range(T):
     else:
         watermarked_sample = watermarked_sample[1:new_tokens+1+sum(
             list(map(int, args.insertion_blocks_length.split(','))))]
-    attacked_tokens_writer.writerow(np.asarray(watermarked_sample.numpy()))
+    attacked_tokens_writer2.writerow(np.asarray(watermarked_sample.numpy()))
 
     pbar.update(1)
 
@@ -314,6 +311,7 @@ pbar.close()
 log_file.write(f'Attacked the samples in (t = {time()-t1} seconds)\n')
 log_file.flush()
 log_file.close()
-attacked_tokens_save.close()
+attacked_tokens_save1.close()
+attacked_tokens_save2.close()
 
 pickle.dump(results, open(args.save, "wb"))
