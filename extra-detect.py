@@ -55,13 +55,15 @@ results['args'] = copy.deepcopy(args)
 fixed_i = None if args.fixed_i == -1 else args.fixed_i
 
 try:
-    if np.genfromtxt(args.token_file + '-detect/' +
-                     str(args.Tindex) + '-gumbel-' +
-                     str(fixed_i) +
-                     '.csv').size == 1:
-        sys.exit()
+    existing_file_len = np.genfromtxt(args.token_file + '-detect/' +
+                                      str(args.Tindex) + '-gumbel-' +
+                                      str(fixed_i) +
+                                      '.csv').size
 except:
     pass
+
+if existing_file_len == 1:
+    sys.exit()
 
 log_file = open(
     'log/' + str(args.Tindex) + "-" +
