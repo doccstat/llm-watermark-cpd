@@ -96,8 +96,13 @@ n = args.n     # watermark key length
 seeds = np.genfromtxt(args.token_file + '-seeds.csv',
                       delimiter=',', max_rows=1)
 
-watermarked_samples = genfromtxt(
-    args.token_file + '-attacked-tokens.csv', delimiter=",")
+if args.model == "meta-llama/Meta-Llama-3-8B":
+    watermarked_samples = genfromtxt(
+        args.token_file + '-attacked-tokens-ml3.csv', delimiter=",")
+elif args.model == "openai-community/gpt2":
+    watermarked_samples = genfromtxt(
+        args.token_file + '-attacked-tokens-gpt.csv', delimiter=",")
+
 Tindex = min(args.Tindex, watermarked_samples.shape[0])
 log_file.write(f'Loaded the samples (t = {time.time()-t0} seconds)\n')
 log_file.flush()
