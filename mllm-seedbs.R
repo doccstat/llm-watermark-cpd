@@ -129,6 +129,7 @@ if (seeded_interval_index <= nrow(seeded_intervals) && !file.exists(filename)) {
     filename <- sub(
       "YYY", seeded_intervals[seeded_interval_index, 1] + i - 1 - 1, filename
     )
+    filename <- sub(".csv", paste0("-", appendix, ".csv"), filename)
     pvalue_vector[i] <- unlist(read.csv(filename, header = FALSE))
   }
   index_p_tilde <- segment_significance(pvalue_vector)
