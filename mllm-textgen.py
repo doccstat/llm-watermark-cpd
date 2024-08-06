@@ -209,17 +209,17 @@ for batch in range(T):
 
     null_samples.append(generate_rnd(
         prompts[idx], 100+buffer_tokens, model1))
-    watermarked_samples = generate_watermark1(
+    watermarked_sampleasdf = generate_watermark1(
         null_samples[-1], seeds[idx], 100)
-    watermarked_samples = tokenizer1.decode(
-        watermarked_samples[0, prompt_tokens:], skip_special_tokens=True
+    watermarked_samplefdsa = tokenizer1.decode(
+        watermarked_sampleasdf[0, prompt_tokens:], skip_special_tokens=True
     )
-    watermarked_samples = tokenizer2.encode(watermarked_samples,
-                                            return_tensors='pt',
-                                            truncation=True,
-                                            max_length=2048)[0]
+    watermarked_sampleassdf = tokenizer2.encode(watermarked_samplefdsa,
+                                                return_tensors='pt',
+                                                truncation=True,
+                                                max_length=2048)[0]
     watermarked_samples.append(generate_watermark2(
-        torch.vstack([watermarked_samples]), seeds[idx], 100))
+        torch.vstack([watermarked_sampleassdf]), seeds[idx], 100))
 
     pbar.update(1)
     log_file.write(f'Generated batch 0 in (t = {time()-t1} seconds)\n')
