@@ -210,7 +210,7 @@ for batch in range(T):
     null_samples.append(generate_rnd(
         prompts[idx], 100+buffer_tokens, model1))
     watermarked_samples = generate_watermark1(
-        null_samples[-1][idx], seeds[idx], 100)
+        null_samples[-1], seeds[idx], 100)
     watermarked_samples = tokenizer1.decode(
         watermarked_samples[0, prompt_tokens:], skip_special_tokens=True
     )
