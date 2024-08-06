@@ -100,7 +100,7 @@ args <- commandArgs(trailingOnly = TRUE)
 template_index <- as.integer(args[1])  # 1
 prompt_index <- as.integer(args[2])  # 0
 seeded_interval_index <- as.integer(args[3])  # Start from 1 to 29
-appendix <- as.integer(args[4])  # ml3 or gpt
+appendix <- args[4]  # ml3 or gpt
 
 # The parameter `k` used in `textgen`
 segment_length <- 20
