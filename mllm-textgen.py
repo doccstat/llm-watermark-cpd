@@ -213,14 +213,14 @@ for batch in range(n_batches):
     watermarked_samples = generate_watermark1(
         null_samples[-1][idx], seeds[idx], 100)
     watermarked_samples = tokenizer1.decode(
-        watermarked_samples[0, :], skip_special_tokens=True
+        watermarked_samples[0, prompt_tokens:], skip_special_tokens=True
     )
     watermarked_samples = tokenizer2.encode(watermarked_samples,
                                             return_tensors='pt',
                                             truncation=True,
                                             max_length=2048)[0]
     watermarked_samples = [generate_watermark2(
-        torch.vstack([watermarked_samples]), seeds[idx], 100)[:, prompt_tokens:]]
+        torch.vstack([watermarked_samples]), seeds[idx], 100)]
 
     pbar.update(1)
     log_file.write(f'Generated batch 0 in (t = {time()-t1} seconds)\n')
