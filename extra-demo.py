@@ -48,22 +48,22 @@ except:
     log_file.write(f'Loaded the model\n')
 
 prompt_tokens = genfromtxt(
-    args.token_file + '-prompt.csv', delimiter=",")
+    args.token_file + '-prompt.csv', delimiter=",", dtype=int)
 prompt_text = tokenizer.decode(
         prompt_tokens, skip_special_tokens=True)
 
 tokens_before_attack = genfromtxt(
-    args.token_file + '-tokens-before-attack.csv', delimiter=",")
+    args.token_file + '-tokens-before-attack.csv', delimiter=",", dtype=int)
 text_before_attack = tokenizer.decode(
     tokens_before_attack, skip_special_tokens=True)
 
 attacked_tokens = genfromtxt(
-    args.token_file + '-attacked-tokens.csv', delimiter=",")
+    args.token_file + '-attacked-tokens.csv', delimiter=",", dtype=int)
 attacked_text = tokenizer.decode(
     attacked_tokens, skip_special_tokens=True)
 
 true_cpts = genfromtxt(
-    args.token_file + '-cpts.csv', delimiter=",")
+    args.token_file + '-cpts.csv', delimiter=",", dtype=int)
 true_cpts = list(map(int, true_cpts))
 true_cpts.append(len(attacked_tokens))
 detected_cpts = list(map(int, args.detected_cpts.split(',')))
