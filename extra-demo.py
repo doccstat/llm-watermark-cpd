@@ -62,10 +62,7 @@ attacked_tokens = genfromtxt(
 attacked_text = tokenizer.decode(
     attacked_tokens, skip_special_tokens=True)
 
-true_cpts = genfromtxt(
-    args.token_file + '-cpts.csv', delimiter=",", dtype=int)
-true_cpts = list(map(int, true_cpts))
-true_cpts.append(len(attacked_tokens))
+true_cpts = [100, 200, 300, 400, 500]
 detected_cpts = list(map(int, args.detected_cpts.split(',')))
 detected_cpts.append(len(attacked_tokens))
 
