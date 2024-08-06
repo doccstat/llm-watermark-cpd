@@ -62,3 +62,5 @@ python extra-detect.py --token_file "results/ml3-random-12cpts-text5-gumbel.p" -
 
 python extra-detect.py --token_file "results/ml3-concat-text5-gumbel.p" --n 1000 --model meta-llama/Meta-Llama-3-8B --seed 1 --Tindex 0 --k 20 --method gumbel --fixed_i ${fixed_i} &
 python extra-detect.py --token_file "results/ml3-concat-french-text5-gumbel.p" --n 1000 --model meta-llama/Meta-Llama-3-8B --seed 1 --Tindex 0 --k 20 --method gumbel --fixed_i ${fixed_i} &
+
+wait
