@@ -10,7 +10,7 @@
 #SBATCH --error=/home/anthony.li/out/mllm-seedbs.%A.%a.err
 #SBATCH --mail-type=FAIL,TIME_LIMIT
 #SBATCH --mail-user=anthony.li@tamu.edu
-#SBATCH --array=1-29
+#SBATCH --array=1-58
 
 module purge
 module load R/4.3.2-gfbf-2023a
@@ -20,8 +20,8 @@ cd /home/anthony.li/llm-watermark-cpd
 echo "Starting job with ID ${SLURM_JOB_ID} on ${SLURM_JOB_NODELIST}"
 
 # Total number of commands and jobs
-total_commands=29
-total_jobs=29
+total_commands=58
+total_jobs=58
 
 # Calculate the number of commands per job (minimum)
 commands_per_job=$((total_commands / total_jobs))

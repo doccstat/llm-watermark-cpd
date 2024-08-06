@@ -221,7 +221,9 @@ rm -f mllm-seedbs-commands.sh
 for template_index in 1; do
   for prompt_index in 0; do
     for seeded_interval_index in $(seq 1 29); do
-      echo "Rscript mllm-seedbs.R $template_index $prompt_index $seeded_interval_index" >> mllm-seedbs-commands.sh
+      for llm in gpt ml3; do
+        echo "Rscript mllm-seedbs.R $template_index $prompt_index $seeded_interval_index $llm" >> mllm-seedbs-commands.sh
+      done
     done
   done
 done

@@ -100,6 +100,7 @@ args <- commandArgs(trailingOnly = TRUE)
 template_index <- as.integer(args[1])  # 1
 prompt_index <- as.integer(args[2])  # 0
 seeded_interval_index <- as.integer(args[3])  # Start from 1 to 29
+appendix <- as.integer(args[4])  # ml3 or gpt
 
 # The parameter `k` used in `textgen`
 segment_length <- 20
@@ -116,6 +117,7 @@ seeded_intervals <- seeded_intervals + segment_length / 2
 
 filename <- sub("XXX", prompt_index, pvalue_files_templates[template_index])
 filename <- sub("YYY", paste0("SeedBS-", seeded_interval_index), filename)
+filename <- sub(".csv", paste0("-", appendix, ".csv"), filename)
 if (seeded_interval_index <= nrow(seeded_intervals) && !file.exists(filename)) {
   pvalue_vector <- rep(
     NA,
@@ -132,5 +134,6 @@ if (seeded_interval_index <= nrow(seeded_intervals) && !file.exists(filename)) {
   index_p_tilde <- segment_significance(pvalue_vector)
   filename <- sub("XXX", prompt_index, pvalue_files_templates[template_index])
   filename <- sub("YYY", paste0("SeedBS-", seeded_interval_index), filename)
+  filename <- sub(".csv", paste0("-", appendix, ".csv"), filename)
   write.csv(index_p_tilde, filename, row.names = FALSE)
 }
