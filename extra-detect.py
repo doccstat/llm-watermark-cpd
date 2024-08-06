@@ -56,16 +56,11 @@ fixed_i = None if args.fixed_i == -1 else args.fixed_i
 
 try:
     with open(args.token_file + '-detect/' +
-              str(args.Tindex) + '-gumbel-edit-' +
-              str(fixed_i) +
-              '.csv', 'r') as f:
-        reader1 = csv.reader(f)
-    with open(args.token_file + '-detect/' +
               str(args.Tindex) + '-gumbel-' +
               str(fixed_i) +
               '.csv', 'r') as f:
         reader2 = csv.reader(f)
-    if len(next(reader1)) == 1 and len(next(reader2)) == 1:
+    if len(next(reader2)) == 1:
         sys.exit()
 except:
     pass
