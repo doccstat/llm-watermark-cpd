@@ -118,7 +118,7 @@ seeded_intervals <- seeded_intervals + segment_length / 2
 filename <- sub("XXX", prompt_index, pvalue_files_templates[template_index])
 filename <- sub("YYY", paste0("SeedBS-", seeded_interval_index), filename)
 filename <- sub(".csv", paste0("-", appendix, ".csv"), filename)
-if (seeded_interval_index <= nrow(seeded_intervals) && !file.exists(filename)) {
+# if (seeded_interval_index <= nrow(seeded_intervals) && !file.exists(filename)) {
   pvalue_vector <- rep(
     NA,
     seeded_intervals[seeded_interval_index, 2] -
@@ -137,4 +137,4 @@ if (seeded_interval_index <= nrow(seeded_intervals) && !file.exists(filename)) {
   filename <- sub("YYY", paste0("SeedBS-", seeded_interval_index), filename)
   filename <- sub(".csv", paste0("-", appendix, ".csv"), filename)
   write.csv(index_p_tilde, filename, row.names = FALSE)
-}
+# }
