@@ -58,8 +58,8 @@ try:
 except:
     pass
 
-if existing_file_len == 1:
-    sys.exit()
+# if existing_file_len == 1:
+#     sys.exit()
 
 t0 = time.time()
 
