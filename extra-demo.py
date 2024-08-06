@@ -62,8 +62,9 @@ attacked_tokens = genfromtxt(
 attacked_text = tokenizer.decode(
     attacked_tokens, skip_special_tokens=True)
 
-true_cpts = [100, 200, 300, 400, 500]
-detected_cpts = list(map(int, args.detected_cpts.split(',')))
+true_cpts = [0, 100, 200, 300, 400, 500]
+detected_cpts = [0]
+detected_cpts.extend(map(int, args.detected_cpts.split(',')))
 detected_cpts.append(len(attacked_tokens))
 
 log_file.write(f'Prompt: {prompt_text}\n')
