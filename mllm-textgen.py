@@ -219,7 +219,7 @@ for batch in range(T):
                                                 truncation=True,
                                                 max_length=2048)[0]
     watermarked_samples.append(generate_watermark2(
-        torch.vstack([watermarked_sampleassdf]), seeds[idx], 100))
+        torch.vstack([watermarked_sampleassdf]), seeds[idx], 100)[:, :300])
 
     pbar.update(1)
     log_file.write(f'Generated batch 0 in (t = {time()-t1} seconds)\n')
