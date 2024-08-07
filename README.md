@@ -215,7 +215,11 @@ sbatch extra-seedbs.sh
 ### Multiple LLM experiments
 
 ```shell
-mkdir -p results/ml3-mllm-gumbel.p-detect
+mkdir -p results/ml3-mllm-1-gumbel.p-detect
+mkdir -p results/ml3-mllm-2-gumbel.p-detect
+mkdir -p results/ml3-mllm-3-gumbel.p-detect
+mkdir -p results/ml3-mllm-4-gumbel.p-detect
+mkdir -p results/ml3-mllm-5-gumbel.p-detect
 
 rm -f mllm-seedbs-commands.sh
 for template_index in 1; do
