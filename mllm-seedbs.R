@@ -4,7 +4,7 @@ folder <- "results/"
 models <- c("meta-llama/Meta-Llama-3-8B")
 models_folders_prefix <- c("ml3")
 generation_methods <- c("gumbel")
-experiment_settings <- c("mllm")
+experiment_settings <- paste0("mllm", seq_len(5))
 
 pvalue_files_templates <- NULL
 for (model_index in seq_along(models)) {
