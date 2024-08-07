@@ -222,7 +222,7 @@ mkdir -p results/ml3-mllm-4-gumbel.p-detect
 mkdir -p results/ml3-mllm-5-gumbel.p-detect
 
 rm -f mllm-seedbs-commands.sh
-for template_index in 1; do
+for template_index in 1 2 3 4 5; do
   for prompt_index in 0 1 2 3 4; do
     for seeded_interval_index in $(seq 1 29); do
       for llm in gpt ml3; do
