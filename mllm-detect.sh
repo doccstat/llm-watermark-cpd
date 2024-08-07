@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name=mllm-detect
-#SBATCH --ntasks=2
+#SBATCH --ntasks=10
 #SBATCH --cpus-per-task=1
 #SBATCH --time=1-00:00:00
 #SBATCH --partition=medium,long,xlong
@@ -24,7 +24,19 @@ export HF_HOME=/scratch/user/anthony.li/hf_cache
 # Calculate fixed_i as SLURM_ARRAY_TASK_ID - 1
 fixed_i=$(($SLURM_ARRAY_TASK_ID - 1))
 
-python mllm-detect.py --token_file "results/ml3-mllm-gumbel.p" --n 1000 --model meta-llama/Meta-Llama-3-8B --seed 1 --Tindex 0 --k 20 --method gumbel --fixed_i ${fixed_i} &
-python mllm-detect.py --token_file "results/ml3-mllm-gumbel.p" --n 1000 --model openai-community/gpt2 --seed 1 --Tindex 0 --k 20 --method gumbel --fixed_i ${fixed_i} &
+python mllm-detect.py --token_file "results/ml3-mllm-1-gumbel.p" --n 1000 --model meta-llama/Meta-Llama-3-8B --seed 1 --Tindex 0 --k 20 --method gumbel --fixed_i ${fixed_i} &
+python mllm-detect.py --token_file "results/ml3-mllm-1-gumbel.p" --n 1000 --model openai-community/gpt2 --seed 1 --Tindex 0 --k 20 --method gumbel --fixed_i ${fixed_i} &
+
+python mllm-detect.py --token_file "results/ml3-mllm-2-gumbel.p" --n 1000 --model meta-llama/Meta-Llama-3-8B --seed 1 --Tindex 0 --k 20 --method gumbel --fixed_i ${fixed_i} &
+python mllm-detect.py --token_file "results/ml3-mllm-2-gumbel.p" --n 1000 --model openai-community/gpt2 --seed 1 --Tindex 0 --k 20 --method gumbel --fixed_i ${fixed_i} &
+
+python mllm-detect.py --token_file "results/ml3-mllm-3-gumbel.p" --n 1000 --model meta-llama/Meta-Llama-3-8B --seed 1 --Tindex 0 --k 20 --method gumbel --fixed_i ${fixed_i} &
+python mllm-detect.py --token_file "results/ml3-mllm-3-gumbel.p" --n 1000 --model openai-community/gpt2 --seed 1 --Tindex 0 --k 20 --method gumbel --fixed_i ${fixed_i} &
+
+python mllm-detect.py --token_file "results/ml3-mllm-4-gumbel.p" --n 1000 --model meta-llama/Meta-Llama-3-8B --seed 1 --Tindex 0 --k 20 --method gumbel --fixed_i ${fixed_i} &
+python mllm-detect.py --token_file "results/ml3-mllm-4-gumbel.p" --n 1000 --model openai-community/gpt2 --seed 1 --Tindex 0 --k 20 --method gumbel --fixed_i ${fixed_i} &
+
+python mllm-detect.py --token_file "results/ml3-mllm-5-gumbel.p" --n 1000 --model meta-llama/Meta-Llama-3-8B --seed 1 --Tindex 0 --k 20 --method gumbel --fixed_i ${fixed_i} &
+python mllm-detect.py --token_file "results/ml3-mllm-5-gumbel.p" --n 1000 --model openai-community/gpt2 --seed 1 --Tindex 0 --k 20 --method gumbel --fixed_i ${fixed_i} &
 
 wait
