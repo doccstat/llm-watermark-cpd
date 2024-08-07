@@ -27,3 +27,6 @@ python extra-demo.py --token_file "results/ml3-concat-text5-gumbel.p" --model me
 python extra-demo.py --token_file "results/ml3-concat-french-text5-gumbel.p" --model meta-llama/Meta-Llama-3-8B --seed 1 --detected_cpts "50,60" &
 
 wait
+
+cat log/ml3-concat-text5-gumbel-demo.log
+cat log/ml3-concat-french-text5-gumbel-demo.log

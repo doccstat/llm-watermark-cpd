@@ -58,6 +58,7 @@ parser.add_argument('--kirch_gamma', default=0.25, type=float)
 parser.add_argument('--kirch_delta', default=1.0, type=float)
 
 parser.add_argument('--truncate_vocab', default=8, type=int)
+parser.add_argument('--skip', default=0, type=int)
 
 args = parser.parse_args()
 
@@ -119,7 +120,7 @@ except:
     dataset = load_dataset("allenai/c4", "realnewslike",
                            split="train", streaming=True)
 
-T = 5                  # number of prompts/generations
+T = 1                  # number of prompts/generations
 n_batches = int(np.ceil(T / args.batch_size))  # number of batches
 prompt_tokens = args.prompt_tokens      # minimum prompt length
 new_tokens = args.tokens_count
@@ -135,7 +136,7 @@ n = args.watermark_key_length
 seeds = torch.randint(2**32, (T,))
 seeds_save = open(args.save + '-seeds.csv', 'w')
 seeds_writer = csv.writer(seeds_save, delimiter=",")
-seeds_writer.writerow(np.asarray(seeds.squeeze().numpy()))
+seeds_writer.writerow(np.asarray(seeds.numpy()))
 seeds_save.close()
 
 
@@ -177,7 +178,11 @@ prompt_writer = csv.writer(prompt_save, delimiter=",")
 prompts = []
 itm = 0
 pbar = tqdm(total=T)
+skip = args.skip
 while itm < T:
+    while skip > 0:
+        _ = next(ds_iterator)
+        skip -= 1
     example = next(ds_iterator)
     text = example['text']
 
@@ -203,23 +208,24 @@ null_samples = []
 watermarked_samples = []
 
 t1 = time()
-pbar = tqdm(total=T)
-for batch in range(T):
-    idx = [batch]
+pbar = tqdm(total=n_batches)
+for batch in range(n_batches):
+    idx = torch.arange(batch * args.batch_size,
+                       min(T, (batch + 1) * args.batch_size))
 
     null_samples.append(generate_rnd(
         prompts[idx], 100+buffer_tokens, model1))
-    watermarked_sampleasdf = generate_watermark1(
-        null_samples[-1], seeds[idx], 100)
-    watermarked_samplefdsa = tokenizer1.decode(
-        watermarked_sampleasdf[0, prompt_tokens:], skip_special_tokens=True
+    watermarked_samples = generate_watermark1(
+        null_samples[-1][idx], seeds[idx], 100)
+    watermarked_samples = tokenizer1.decode(
+        watermarked_samples[0, prompt_tokens:], skip_special_tokens=True
     )
-    watermarked_sampleassdf = tokenizer2.encode(watermarked_samplefdsa,
-                                                return_tensors='pt',
-                                                truncation=True,
-                                                max_length=2048)[0]
-    watermarked_samples.append(generate_watermark2(
-        torch.vstack([watermarked_sampleassdf]), seeds[idx], 100)[:, :300])
+    watermarked_samples = tokenizer2.encode(watermarked_samples,
+                                            return_tensors='pt',
+                                            truncation=True,
+                                            max_length=2048)[0]
+    watermarked_samples = [generate_watermark2(
+        torch.vstack([watermarked_samples]), seeds[idx], 100)]
 
     pbar.update(1)
     log_file.write(f'Generated batch 0 in (t = {time()-t1} seconds)\n')

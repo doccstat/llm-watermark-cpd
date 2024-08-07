@@ -97,7 +97,7 @@ segment_significance <- function(pvalues) {
   c(original_ks_statistic[1], mean(p_tilde))
 }
 
-prompt_count <- 1
+prompt_count <- 5
 
 seeded_intervals_results <- list()
 pvalue_matrices <- list()

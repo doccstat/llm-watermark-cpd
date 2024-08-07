@@ -34,7 +34,7 @@ export HF_HOME=/scratch/user/anthony.li/hf_cache
 n=1000
 
 python mllm-textgen.py \
-  --save results/ml3-mllm-gumbel.p \
+  --save results/ml3-mllm-1-gumbel.p \
   --watermark_key_length $n \
   --tokens_count 300 \
   --model1 meta-llama/Meta-Llama-3-8B \
@@ -42,3 +42,47 @@ python mllm-textgen.py \
   --seed 1 \
   --k 20 \
   --method gumbel
+
+python mllm-textgen.py \
+  --save results/ml3-mllm-2-gumbel.p \
+  --watermark_key_length $n \
+  --tokens_count 300 \
+  --model1 meta-llama/Meta-Llama-3-8B \
+  --model2 openai-community/gpt2 \
+  --seed 1 \
+  --k 20 \
+  --method gumbel \
+  --skip 100
+
+python mllm-textgen.py \
+  --save results/ml3-mllm-3-gumbel.p \
+  --watermark_key_length $n \
+  --tokens_count 300 \
+  --model1 meta-llama/Meta-Llama-3-8B \
+  --model2 openai-community/gpt2 \
+  --seed 1 \
+  --k 20 \
+  --method gumbel \
+  --skip 200
+
+python mllm-textgen.py \
+  --save results/ml3-mllm-4-gumbel.p \
+  --watermark_key_length $n \
+  --tokens_count 300 \
+  --model1 meta-llama/Meta-Llama-3-8B \
+  --model2 openai-community/gpt2 \
+  --seed 1 \
+  --k 20 \
+  --method gumbel \
+  --skip 300
+
+python mllm-textgen.py \
+  --save results/ml3-mllm-5-gumbel.p \
+  --watermark_key_length $n \
+  --tokens_count 300 \
+  --model1 meta-llama/Meta-Llama-3-8B \
+  --model2 openai-community/gpt2 \
+  --seed 1 \
+  --k 20 \
+  --method gumbel \
+  --skip 400

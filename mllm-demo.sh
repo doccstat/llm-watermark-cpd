@@ -26,3 +26,5 @@ fixed_i=$(($SLURM_ARRAY_TASK_ID - 1))
 python mllm-demo.py --token_file "results/ml3-mllm-gumbel.p" --model openai-community/gpt2 --seed 1 --detected_cpts "50,60" &
 
 wait
+
+cat log/ml3-mllm-gumbel-demo.log
