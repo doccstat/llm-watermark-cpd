@@ -4,7 +4,7 @@ folder <- "results/"
 models <- c("meta-llama/Meta-Llama-3-8B")
 models_folders_prefix <- c("ml3")
 generation_methods <- c("gumbel")
-experiment_settings <- c("mllm")
+experiment_settings <- paste0("mllm-", seq_len(5))
 models_folders_suffix <- c("ml3", "gpt")
 
 pvalue_files_templates <- NULL
@@ -97,7 +97,7 @@ segment_significance <- function(pvalues) {
   c(original_ks_statistic[1], mean(p_tilde))
 }
 
-prompt_count <- 5
+prompt_count <- 1
 
 seeded_intervals_results <- list()
 pvalue_matrices <- list()
