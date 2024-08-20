@@ -23,7 +23,7 @@ export HF_HOME=/scratch/user/anthony.li/hf_cache
 # Calculate fixed_i as SLURM_ARRAY_TASK_ID - 1
 fixed_i=$(($SLURM_ARRAY_TASK_ID - 1))
 
-python extra-demo.py --token_file "results/ml3-concat-text5-gumbel.p" --model meta-llama/Meta-Llama-3-8B --seed 1 --detected_cpts "50,60" &
+python extra-demo.py --token_file "results/ml3-concat-text5-gumbel.p" --model meta-llama/Meta-Llama-3-8B --seed 1 --detected_cpts "95,199,299,387" &
 python extra-demo.py --token_file "results/ml3-concat-french-text5-gumbel.p" --model meta-llama/Meta-Llama-3-8B --seed 1 --detected_cpts "50,60" &
 
 wait

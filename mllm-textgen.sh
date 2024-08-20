@@ -41,6 +41,7 @@ python mllm-textgen.py \
   --model2 openai-community/gpt2 \
   --seed 1 \
   --k 20 \
+  --buffer_tokens 0 \
   --method gumbel
 
 python mllm-textgen.py \
@@ -51,6 +52,7 @@ python mllm-textgen.py \
   --model2 openai-community/gpt2 \
   --seed 1 \
   --k 20 \
+  --buffer_tokens 0 \
   --method gumbel \
   --skip 100
 
@@ -62,6 +64,7 @@ python mllm-textgen.py \
   --model2 openai-community/gpt2 \
   --seed 1 \
   --k 20 \
+  --buffer_tokens 0 \
   --method gumbel \
   --skip 200
 
@@ -73,6 +76,7 @@ python mllm-textgen.py \
   --model2 openai-community/gpt2 \
   --seed 1 \
   --k 20 \
+  --buffer_tokens 0 \
   --method gumbel \
   --skip 300
 
@@ -84,5 +88,6 @@ python mllm-textgen.py \
   --model2 openai-community/gpt2 \
   --seed 1 \
   --k 20 \
+  --buffer_tokens 0 \
   --method gumbel \
   --skip 400

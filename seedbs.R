@@ -2,6 +2,7 @@ set.seed(1)
 
 folder <- "results/"
 experiment_settings <- paste0(c(0, 1, 2, 4, 9, 19), "changepoints")
+# experiment_settings <- c("comment")
 models <- c("meta-llama/Meta-Llama-3-8B")
 models_folders_prefix <- c("ml3")
 generation_methods <- c("gumbel", "transform")
@@ -115,6 +116,7 @@ for (pvalue_files_template in pvalue_files_templates) {
 segment_length <- 20
 seeded_intervals_minimum <- 50
 token_count <- 500
+# token_count <- 1300
 seeded_intervals <- get_seeded_intervals(
   token_count - segment_length,
   decay = sqrt(2), unique.int = TRUE
@@ -127,7 +129,7 @@ seeded_intervals <- seeded_intervals + segment_length / 2
 args <- commandArgs(trailingOnly = TRUE)
 template_index <- as.integer(args[1])  # Start from 1
 prompt_index <- as.integer(args[2])  # Start from 0
-seeded_interval_index <- as.integer(args[3])  # Start from 1
+seeded_interval_index <- as.integer(args[3])  # Start from 1 to 148 for 1300 tokens
 
 filename <- sub("XXX", prompt_index, pvalue_files_templates[template_index])
 filename <- sub("YYY", paste0("SeedBS-", seeded_interval_index), filename)

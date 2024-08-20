@@ -8,7 +8,7 @@
 #SBATCH --mem-per-cpu=1GB
 #SBATCH --output=/home/anthony.li/out/seedbs.%A.%a.out
 #SBATCH --error=/home/anthony.li/out/seedbs.%A.%a.err
-#SBATCH --mail-type=FAIL,TIME_LIMIT
+#SBATCH --mail-type=FAIL,TIME_LIMIT,BEGIN,END
 #SBATCH --mail-user=anthony.li@tamu.edu
 #SBATCH --array=1-1000
 

@@ -445,7 +445,8 @@ python extra-textgen.py \
   --T 1 \
   --k 20 \
   --method gumbel \
-  --meaningful
+  --meaningful \
+  --buffer_tokens 0
 
 python extra-textgen.py \
   --save results/ml3-concat-french-text5-gumbel.p \
@@ -459,4 +460,5 @@ python extra-textgen.py \
   --method gumbel \
   --meaningful \
   --rt_translate \
-  --language french
+  --language french \
+  --buffer_tokens 0

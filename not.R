@@ -2,6 +2,7 @@ set.seed(1)
 
 folder <- "results/"
 experiment_settings <- paste0(c(0, 1, 4, 9, 19), "changepoints")
+# experiment_settings <- c("comment")
 models <- c("meta-llama/Meta-Llama-3-8B")
 models_folders_prefix <- c("ml3")
 generation_methods <- c("gumbel")
@@ -145,6 +146,7 @@ for (pvalue_files_template in pvalue_files_templates) {
 segment_length <- 20
 seeded_intervals_minimum <- 50
 token_count <- 500
+# token_count <- 1300
 seeded_intervals <- get_seeded_intervals(
   token_count - segment_length,
   decay = sqrt(2), unique.int = TRUE

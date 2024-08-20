@@ -8,7 +8,7 @@
 #SBATCH --mem-per-cpu=1GB
 #SBATCH --output=/home/anthony.li/out/detect.%A.%a.out
 #SBATCH --error=/home/anthony.li/out/detect.%A.%a.err
-#SBATCH --mail-type=FAIL,TIME_LIMIT
+#SBATCH --mail-type=FAIL,TIME_LIMIT,END
 #SBATCH --mail-user=anthony.li@tamu.edu
 #SBATCH --array=1-1000
 
@@ -21,9 +21,24 @@ echo "Starting job with ID ${SLURM_JOB_ID} on ${SLURM_JOB_NODELIST}"
 
 export HF_HOME=/scratch/user/anthony.li/hf_cache
 
-# Calculate the starting and ending line numbers for the commands
-start_command=$(( (${SLURM_ARRAY_TASK_ID} - 1) * 60 + 1 ))
-end_command=$((${SLURM_ARRAY_TASK_ID} * 60))
+# Total number of commands and jobs
+total_commands=13000
+total_jobs=1000
+
+# Calculate the number of commands per job (minimum)
+commands_per_job=$((total_commands / total_jobs))
+
+# Calculate the number of jobs that need to process an mllm command
+extra_commands=$((total_commands % total_jobs))
+
+# Determine the start and end command index for this particular job
+if [ ${SLURM_ARRAY_TASK_ID} -le $extra_commands ]; then
+    start_command=$(( (${SLURM_ARRAY_TASK_ID} - 1) * (commands_per_job + 1) + 1 ))
+    end_command=$(( ${SLURM_ARRAY_TASK_ID} * (commands_per_job + 1) ))
+else
+    start_command=$(( extra_commands * (commands_per_job + 1) + (${SLURM_ARRAY_TASK_ID} - extra_commands - 1) * commands_per_job + 1 ))
+    end_command=$(( extra_commands * (commands_per_job + 1) + (${SLURM_ARRAY_TASK_ID} - extra_commands) * commands_per_job ))
+fi
 
 echo "Running tasks for commands from $start_command to $end_command"
 

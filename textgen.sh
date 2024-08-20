@@ -282,7 +282,7 @@ python textgen.py \
   --gpt_rewrite_key ''
 
 python textgen.py \
-  --save results/ml3-comment-gumbel-p \
+  --save results/ml3-comment-gumbel.p \
   --watermark_key_length $n \
   --batch_size 10 \
   --tokens_count 1300 \
