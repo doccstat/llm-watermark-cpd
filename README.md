@@ -1,6 +1,6 @@
 # Segmenting Watermarked Texts From Language Models
 
-Code for "Segmenting Watermarked Texts From Language Models" (NeurIPS 2024).
+Implementation of the methods described in "Segmenting Watermarked Texts From Language Models" by [Xingchi Li](https://xingchi.li), [Guanxun Li](https://guanxun.li), [Xianyang Zhang](https://zhangxiany-tamu.github.io).
 
 ## Prerequisites
 
@@ -211,3 +211,7 @@ for template_index in 1 2 3 4 5; do
   done
 done
 ```
+
+# Citation
+
+TBD
