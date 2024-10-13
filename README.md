@@ -1,4 +1,6 @@
-# llm-watermark-cpd
+# Segmenting Watermarked Texts From Language Models
+
+Code for "Segmenting Watermarked Texts From Language Models" (NeurIPS 2024).
 
 ## Prerequisites
 
@@ -24,8 +26,6 @@
 
 ### Set up environments
 
-#### Python
-
 > [!NOTE]
 > Refer to https://pytorch.org for PyTorch installation on other platforms
 
@@ -36,67 +36,46 @@ conda install conda-forge::transformers
 conda install cython scipy nltk sentencepiece sacremoses
 ```
 
-#### R
+## Instructions
+
+All experiments are conducted using Slurm workload manager. Expected running
+time and memory usage are provided in the corresponding sbatch scripts.
 
 > [!NOTE]
-> R is used for change point detection. Refer to https://www.r-project.org for
-> installation instructions.
+> Please modify the paths, uncomment Slurm mail options and adjust the GPU
+> resources in the sbatch scripts before running the experiments.
 
-```r
-install.packages(c("doParallel", "reshape2", "ggplot2", "fossil"))
-```
-
-## Instruction
-
-To reproduce the results, follow the instructions below or use the attached
-results directly using `Rscript analyze.R 1 3200`.
-
-### Set up pyx
+### Setup pyx.
 
 ```shell
-python setup.py build_ext --inplace
+sbatch 1-setup.sh
 ```
 
-#### Expected running time
-
-Less than 1 minute on a single core CPU machine.
-
-#### Expected memory usage
-
-Less than 1 GB.
-
-### Generate watermarked tokens
+### Text generation.
 
 ```shell
-sbatch textgen.sh
+bash 2-textgen-helper.sh
+sbatch 2-textgen.sh
 ```
 
-#### Expected running time
-
-Less than 4 hours on 1 compute node with 1 NVIDIA A30 GPU and 128 CPU cores.
-
-#### Expected memory usage
-
-Less than 128 GB.
-
-### Calculate p-values for sliding windows
+### Rolling window watermark detection.
 
 ```shell
-rm -f detect-commands.sh
+rm -f 3-detect-commands.sh
 for method in gumbel transform; do
   for cpts in 0 1 2 4 9 19; do
     mkdir -p results/ml3-${cpts}changepoints-$method.p-detect
     for Tindex in $(seq 0 9); do
       for k in 20; do
         for fixed_i in $(seq 0 499); do
-          echo "bash ./detect-helper.sh $method $Tindex $cpts $k $fixed_i" >> detect-commands.sh
+          echo "bash ./detect-helper.sh $method $Tindex $cpts $k $fixed_i" >> 3-detect-commands.sh
         done
       done
     done
   done
 done
 
-sbatch detect.sh
+sbatch 3-detect.sh
 ```
 
 #### Expected running time

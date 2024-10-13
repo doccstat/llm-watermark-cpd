@@ -41,7 +41,6 @@ parser.add_argument('--seed', default=0, type=int)
 parser.add_argument('--batch_size', default=1, type=int)
 
 parser.add_argument('--tokens_count', default=80, type=int)
-parser.add_argument('--k', default=0, type=int)
 parser.add_argument('--watermark_key_length', default=256, type=int)
 parser.add_argument('--T', default=500, type=int)
 
@@ -126,10 +125,6 @@ n_batches = int(np.ceil(T / args.batch_size))  # number of batches
 prompt_tokens = args.prompt_tokens      # minimum prompt length
 new_tokens = args.tokens_count
 buffer_tokens = args.buffer_tokens
-if args.k == 0:
-    k = args.tokens_count  # k is the block size (= number of tokens)
-else:
-    k = args.k
 n = args.watermark_key_length
 
 if args.rt_translate:
