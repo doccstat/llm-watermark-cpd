@@ -172,3 +172,4 @@ mllm-seedbs-commands.sh
 results.tar.gz
 .Rhistory
 2-textgen-commands.sh
+3-detect-commands.sh

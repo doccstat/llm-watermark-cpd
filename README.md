@@ -61,20 +61,7 @@ sbatch 2-textgen.sh
 ### Rolling window watermark detection.
 
 ```shell
-rm -f 3-detect-commands.sh
-for method in gumbel transform; do
-  for cpts in 0 1 2 4 9 19; do
-    mkdir -p results/ml3-${cpts}changepoints-$method.p-detect
-    for Tindex in $(seq 0 9); do
-      for k in 20; do
-        for fixed_i in $(seq 0 499); do
-          echo "bash ./detect-helper.sh $method $Tindex $cpts $k $fixed_i" >> 3-detect-commands.sh
-        done
-      done
-    done
-  done
-done
-
+bash 3-detect-helper.sh
 sbatch 3-detect.sh
 ```
 
