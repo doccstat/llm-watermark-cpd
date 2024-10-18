@@ -31,21 +31,13 @@ log_file.write(str(args) + '\n')
 log_file.flush()
 
 torch.manual_seed(args.seed)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-try:
-    tokenizer = AutoTokenizer.from_pretrained(
-        "/scratch/user/anthony.li/models/" + args.model + "/tokenizer")
-    model = AutoModelForCausalLM.from_pretrained(
-        "/scratch/user/anthony.li/models/" + args.model + "/model",
-        device_map='auto'
-    )
-
-    log_file.write(f'Loaded the local model\n')
-except:
-    tokenizer = AutoTokenizer.from_pretrained(args.model)
-    model = AutoModelForCausalLM.from_pretrained(args.model).to(device)
-    log_file.write(f'Loaded the model\n')
+tokenizer = AutoTokenizer.from_pretrained(
+    "/scratch/user/anthony.li/models/" + args.model + "/tokenizer")
+model = AutoModelForCausalLM.from_pretrained(
+    "/scratch/user/anthony.li/models/" + args.model + "/model",
+    device_map='auto'
+)
 
 prompt_tokens = genfromtxt(
     args.token_file + '-prompt.csv', delimiter=",", dtype=int)
