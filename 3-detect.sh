@@ -8,8 +8,8 @@
 #SBATCH --mem-per-cpu=500MB
 #SBATCH --output=/home/anthony.li/out/detect.%A.%a.out
 #SBATCH --error=/home/anthony.li/out/detect.%A.%a.err
-##SBATCH --mail-type=FAIL,TIME_LIMIT,END
-##SBATCH --mail-user=anthony.li@tamu.edu
+#SBATCH --mail-type=FAIL,TIME_LIMIT,END
+#SBATCH --mail-user=anthony.li@tamu.edu
 #SBATCH --array=1-1000
 
 module purge

@@ -11,8 +11,8 @@
 #SBATCH --mem=10GB
 #SBATCH --output=/home/anthony.li/out/textgen.%A.%a.out
 #SBATCH --error=/home/anthony.li/out/textgen.%A.%a.err
-##SBATCH --mail-type=ALL
-##SBATCH --mail-user=anthony.li@tamu.edu
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=anthony.li@tamu.edu
 #SBATCH --array=1-36
 
 module purge

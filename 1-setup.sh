@@ -8,8 +8,8 @@
 #SBATCH --mem-per-cpu=1GB
 #SBATCH --output=/home/anthony.li/out/setup.%j.out
 #SBATCH --error=/home/anthony.li/out/setup.%j.err
-##SBATCH --mail-type=ALL
-##SBATCH --mail-user=anthony.li@tamu.edu
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=anthony.li@tamu.edu
 
 module purge
 module load Python/3.11.5-GCCcore-13.2.0
