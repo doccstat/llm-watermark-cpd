@@ -8,9 +8,6 @@ from transformers import MarianMTModel, MarianTokenizer
 from datasets import load_dataset, load_from_disk
 
 from tqdm import tqdm
-from collections import defaultdict
-import pickle
-import copy
 
 import numpy as np
 
@@ -28,8 +25,6 @@ from watermarking.kirchenbauer.watermark_processor import WatermarkLogitsProcess
 import argparse
 
 import csv
-
-results = defaultdict(dict)
 
 parser = argparse.ArgumentParser(description="Experiment Settings")
 
@@ -70,7 +65,6 @@ parser.add_argument('--language', default="french", type=str)
 parser.add_argument('--truncate_vocab', default=8, type=int)
 
 args = parser.parse_args()
-results['args'] = copy.deepcopy(args)
 
 log_file = open('log/textgen.log', 'w')
 log_file.write(str(args) + '\n')
@@ -283,9 +277,6 @@ pbar.close()
 null_samples = torch.vstack(null_samples)
 watermarked_samples = torch.vstack(watermarked_samples)
 
-results['watermark']['tokens'] = copy.deepcopy(watermarked_samples)
-results['null']['tokens'] = copy.deepcopy(null_samples)
-
 null_samples = torch.clip(null_samples, max=eff_vocab_size-1)
 watermarked_samples = torch.clip(watermarked_samples, max=eff_vocab_size-1)
 
@@ -378,5 +369,3 @@ log_file.write(f'Attacked the samples in (t = {time()-t1} seconds)\n')
 log_file.flush()
 log_file.close()
 attacked_tokens_save.close()
-
-pickle.dump(results, open(args.save, "wb"))
