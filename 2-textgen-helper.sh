@@ -7,7 +7,7 @@ batch_size=25
 
 rm 2-textgen-commands.sh
 
-for model_prefix in ml3; do
+for model_prefix in opt gpt ml3; do
   for method in gumbel transform; do
     if [ "$model_prefix" = "opt" ]; then
       model=facebook/opt-1.3b
