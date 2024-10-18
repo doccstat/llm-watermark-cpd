@@ -7,7 +7,7 @@ import copy
 import numpy as np
 from numpy import genfromtxt
 
-from watermarking.detection import sliding_permutation_test, permutation_test, phi
+from watermarking.detection import sliding_permutation_test, phi
 
 from watermarking.transform.score import transform_score, transform_edit_score
 from watermarking.transform.key import transform_key_func

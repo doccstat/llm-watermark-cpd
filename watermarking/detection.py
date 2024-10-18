@@ -1,34 +1,33 @@
 import torch
-import time
 import numpy as np
 
 
 def sliding_permutation_test(
-    tokens, vocab_size, n, k, seed, test_stats, log_file=None,
-    n_runs=100, max_seed=100000, fixed_i=None
+    tokens, vocab_size, watermark_key_length, rolling_window_size,
+    permutation_count, seed, rolling_window_index, test_stats, max_seed=100000
 ):
-    if fixed_i is None:
-        pvalues = np.full((len(test_stats), len(tokens)), np.nan)
-        for i in range(k // 2, len(tokens) - k // 2):
-            pvalues[:, i] = permutation_test(
-                tokens[(i - k // 2):(i + k // 2 + 1)
-                       ], vocab_size, n, k, seed, test_stats, n_runs, max_seed
-            )
-    else:
-        pvalues = np.full((len(test_stats), 1), np.nan)
-        if fixed_i < k // 2 or fixed_i >= len(tokens) - k // 2:
-            return pvalues
-        pvalues[:, 0] = permutation_test(
-            tokens[(fixed_i - k // 2):(fixed_i + k // 2 + 1)
-                   ], vocab_size, n, k, seed, test_stats, log_file,
-                   n_runs, max_seed
-        )
+    pvalues = np.full((len(test_stats), 1), np.nan)
+    if (rolling_window_index < rolling_window_size // 2 or
+            rolling_window_index >= len(tokens) - rolling_window_size // 2):
+        return pvalues
+    rolling_window_start = rolling_window_index - rolling_window_size // 2
+    rolling_window_end = rolling_window_index + rolling_window_size // 2 + 1
+    pvalues[:, 0] = permutation_test(
+        tokens[rolling_window_start:rolling_window_end],
+        vocab_size,
+        watermark_key_length,
+        rolling_window_size,
+        permutation_count,
+        seed,
+        test_stats,
+        max_seed
+    )
     return pvalues
 
 
 def permutation_test(
-    tokens, vocab_size, n, k, seed, test_stats, log_file=None,
-    n_runs=100, max_seed=100000
+    tokens, vocab_size, watermark_key_length, rolling_window_size,
+    permutation_count, seed, test_stats, max_seed
 ):
     generator = torch.Generator()
 
@@ -36,45 +35,42 @@ def permutation_test(
 
     for test_stat in test_stats:
         generator.manual_seed(int(seed))
-        test_result = test_stat(tokens=tokens,
-                                n=n,
-                                k=k,
-                                generator=generator,
-                                vocab_size=vocab_size)
+        test_result = test_stat(tokens,
+                                watermark_key_length,
+                                rolling_window_size,
+                                generator,
+                                vocab_size)
         test_results.append(test_result)
 
     test_results = np.array(test_results)
     p_val = 0
     null_results = []
-    t0 = time.time()
-    log_file.write(f'Begin {n_runs} permutation tests\n')
-    log_file.flush()
-    for run in range(n_runs):
-        if run % 100 == 0:
-            log_file.write(f'Run {run} (t = {time.time()-t0} seconds)\n')
-            log_file.flush()
+    for run in range(permutation_count):
         null_results.append([])
 
         seed = torch.randint(high=max_seed, size=(1,)).item()
         for test_stat in test_stats:
             generator.manual_seed(int(seed))
-            null_result = test_stat(tokens=tokens,
-                                    n=n,
-                                    k=k,
-                                    generator=generator,
-                                    vocab_size=vocab_size,
+            null_result = test_stat(tokens,
+                                    watermark_key_length,
+                                    rolling_window_size,
+                                    generator,
+                                    vocab_size,
                                     null=True)
             null_results[-1].append(null_result)
         # assuming lower test values indicate presence of watermark
         p_val += (null_result <= test_result).float()
     null_results = np.array(null_results)
 
-    return (np.sum(null_results <= test_results, axis=0) + 1.0) / (n_runs + 1.0)
+    numerator = np.sum(null_results <= test_results, axis=0) + 1.0
+    denominator = permutation_count + 1.0
+
+    return numerator / denominator
 
 
 def phi(
-        tokens, n, k, generator, key_func, vocab_size, dist,
-        null=False, normalize=False
+        tokens, watermark_key_length, rolling_window_size, generator,
+        vocab_size, key_func, dist, null=False, normalize=False
 ):
     if null:
         tokens = torch.unique(torch.asarray(
@@ -83,24 +79,32 @@ def phi(
     else:
         eff_vocab_size = vocab_size
 
-    xi, pi = key_func(generator, n, vocab_size, eff_vocab_size)
+    xi, pi = key_func(generator, watermark_key_length,
+                      vocab_size, eff_vocab_size)
     tokens = torch.argsort(pi)[tokens]
     if normalize:
         tokens = tokens.float() / vocab_size
 
-    A = adjacency(tokens, xi, dist, k)
-    closest = torch.min(A, axis=1)[0]
+    scanning_statistics = adjacency(tokens, xi, dist, rolling_window_size)
+    closest = torch.min(scanning_statistics, axis=1)[0]
 
     return torch.min(closest)
 
 
-def adjacency(tokens, xi, dist, k):
-    m = len(tokens)
-    n = len(xi)
+def adjacency(tokens, xi, dist, rolling_window_size):
+    tokens_count = len(tokens)
+    watermark_key_length = len(xi)
 
-    A = torch.empty(size=(m-(k-1), n))
-    for i in range(m-(k-1)):
-        for j in range(n):
-            A[i][j] = dist(tokens[i:i+k], xi[(j+torch.arange(k)) % n])
+    scanning_statistics = torch.empty(
+        size=(tokens_count-rolling_window_size+1, watermark_key_length)
+    )
+    for i in range(tokens_count-rolling_window_size+1):
+        for j in range(watermark_key_length):
+            scanning_statistics[i][j] = dist(
+                tokens[i:i+rolling_window_size],
+                xi[
+                    (j+torch.arange(rolling_window_size)) % watermark_key_length
+                ]
+            )
 
-    return A
+    return scanning_statistics

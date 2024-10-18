@@ -67,7 +67,6 @@ parser.add_argument('--truncate_vocab', default=8, type=int)
 args = parser.parse_args()
 
 # fix the random seed for reproducibility
-t0 = time()
 torch.manual_seed(args.seed)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

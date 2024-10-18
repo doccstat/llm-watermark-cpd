@@ -130,7 +130,7 @@ for method in gumbel; do
         # Loop over each n_runs in the array
         for n_runs in "${n_runs_array[@]}"; do
           for fixed_i in $(seq 0 499); do
-            echo "bash ./ablation-helper.sh $method $Tindex $cpts $k $fixed_i $n_runs" >> ablation-commands.sh
+            echo "python ablation.py --token_file "results/ml3-${cpts}changepoints-${method}.p" --n 1000 --model meta-llama/Meta-Llama-3-8B --seed 1 --Tindex ${Tindex} --k ${k} --method ${method} --fixed_i ${fixed_i} --n_runs ${n_runs}" >> ablation-commands.sh
           done
         done
       done

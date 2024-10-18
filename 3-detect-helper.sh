@@ -1,6 +1,7 @@
 #!/bin/bash
 
 watermark_key_length=1000
+permutation_count=999
 seed=1
 
 rm -f 3-detect-commands.sh
@@ -17,11 +18,12 @@ for method in gumbel transform; do
       fi
 
       for rolling_window_size in 20; do
-        mkdir -p results/$model_prefix-$method-$watermark_key_length-$cpts-$rolling_window_size-detect
+        # rm -rf results/$model_prefix-$method-$watermark_key_length-$cpts-$rolling_window_size-$permutation_count-detect
+        mkdir -p results/$model_prefix-$method-$watermark_key_length-$cpts-$rolling_window_size-$permutation_count-detect
 
         for prompt_index in $(seq 0 9); do
           for rolling_window_index in $(seq 0 499); do
-            echo "python detect.py --token_file results/$model_prefix-$method-$watermark_key_length-$cpts --model $model --method $method --n $watermark_key_length --k $rolling_window_size --seed $seed --Tindex $prompt_index --fixed_i $rolling_window_index" >> 3-detect-commands.sh
+            echo "python detect.py --token_file results/$model_prefix-$method-$watermark_key_length-$cpts --model $model --method $method --watermark_key_length $watermark_key_length --rolling_window_size $rolling_window_size --permutation_count $permutation_count --seed $seed --Tindex $prompt_index --rolling_window_index $rolling_window_index" >> 3-detect-commands.sh
           done
         done
       done
