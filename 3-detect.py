@@ -10,11 +10,9 @@ from numpy import genfromtxt
 from watermarking.detection import sliding_permutation_test, permutation_test, phi
 
 from watermarking.transform.score import transform_score, transform_edit_score
-from watermarking.transform.score import its_score, itsl_score
 from watermarking.transform.key import transform_key_func
 
 from watermarking.gumbel.score import gumbel_score, gumbel_edit_score
-from watermarking.gumbel.score import ems_score, emsl_score
 from watermarking.gumbel.key import gumbel_key_func
 
 import argparse
@@ -142,39 +140,6 @@ if args.method == "transform":
             normalize=True
         )
     test_stats.append(test_stat2)
-    # def dist3(x, y): return its_score(x, y, vocab_size=vocab_size)
-
-    # def test_stat3(tokens, n, k, generator, vocab_size, null=False):
-    #     return phi(
-    #         tokens=tokens,
-    #         n=n,
-    #         k=k,
-    #         generator=generator,
-    #         key_func=transform_key_func,
-    #         vocab_size=vocab_size,
-    #         dist=dist3,
-    #         null=False,
-    #         normalize=True
-    #     )
-    # test_stats.append(test_stat3)
-
-    # def dist4(x, y): return itsl_score(
-    #     x, y, vocab_size=vocab_size, gamma=args.gamma)
-
-    # def test_stat4(tokens, n, k, generator, vocab_size, null=False):
-    #     return phi(
-    #         tokens=tokens,
-    #         n=n,
-    #         k=k,
-    #         generator=generator,
-    #         key_func=transform_key_func,
-    #         vocab_size=vocab_size,
-    #         dist=dist4,
-    #         null=False,
-    #         normalize=True
-    #     )
-    # test_stats.append(test_stat4)
-
 
 elif args.method == "gumbel":
     test_stats = []
@@ -206,34 +171,6 @@ elif args.method == "gumbel":
         normalize=False
     )
     test_stats.append(test_stat2)
-    # def dist3(x, y): return ems_score(x, y)
-
-    # def test_stat3(tokens, n, k, generator, vocab_size, null=False): return phi(
-    #     tokens=tokens,
-    #     n=n,
-    #     k=k,
-    #     generator=generator,
-    #     key_func=gumbel_key_func,
-    #     vocab_size=vocab_size,
-    #     dist=dist3,
-    #     null=null,
-    #     normalize=False
-    # )
-    # test_stats.append(test_stat3)
-    # def dist4(x, y): return emsl_score(x, y, gamma=args.gamma)
-
-    # def test_stat4(tokens, n, k, generator, vocab_size, null=False): return phi(
-    #     tokens=tokens,
-    #     n=n,
-    #     k=k,
-    #     generator=generator,
-    #     key_func=gumbel_key_func,
-    #     vocab_size=vocab_size,
-    #     dist=dist4,
-    #     null=null,
-    #     normalize=False
-    # )
-    # test_stats.append(test_stat4)
 else:
     raise
 

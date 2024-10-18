@@ -10,7 +10,6 @@ from numpy import genfromtxt
 from watermarking.detection import sliding_permutation_test, permutation_test, phi
 
 from watermarking.gumbel.score import gumbel_score, gumbel_edit_score
-from watermarking.gumbel.score import ems_score, emsl_score
 from watermarking.gumbel.key import gumbel_key_func
 
 import argparse

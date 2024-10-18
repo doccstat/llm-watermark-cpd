@@ -14,11 +14,3 @@ def gumbel_score(tokens, xi):
 def gumbel_edit_score(tokens, xi, gamma):
     return gumbel_levenshtein(tokens.numpy(), xi.numpy(), gamma)
 
-
-def ems_score(tokens, xi):
-    xi_samp = torch.gather(xi, -1, tokens.unsqueeze(-1)).squeeze()
-    return -(1 + torch.mean(torch.log(xi_samp)))
-
-
-def emsl_score(tokens, xi, gamma):
-    return ems_levenshtein(tokens.numpy(), xi.numpy(), gamma)
