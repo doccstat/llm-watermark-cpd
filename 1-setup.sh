@@ -17,7 +17,6 @@ module load Python/3.11.5-GCCcore-13.2.0
 cd /home/anthony.li/llm-watermark-cpd
 
 mkdir -p results
-mkdir -p log
 
 export HF_HOME=/scratch/user/anthony.li/hf_cache
 
