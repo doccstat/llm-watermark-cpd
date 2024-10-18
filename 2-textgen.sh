@@ -20,9 +20,6 @@ module load Python/3.11.5-GCCcore-13.2.0
 
 cd /home/anthony.li/llm-watermark-cpd
 
-mkdir -p results
-mkdir -p log
-
 echo "Starting job with ID ${SLURM_JOB_ID} on ${SLURM_JOB_NODELIST}"
 echo $(which python)
 
