@@ -4,16 +4,16 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 
-#SBATCH --time=1-00:00:00
+#SBATCH --time=0-04:00:00
 #SBATCH --partition=gpu,xgpu
 #SBATCH --gres=gpu:a30:2
 
-#SBATCH --mem=10GB
+#SBATCH --mem=5GB
 #SBATCH --output=/home/anthony.li/out/textgen.%A.%a.out
 #SBATCH --error=/home/anthony.li/out/textgen.%A.%a.err
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=anthony.li@tamu.edu
-#SBATCH --array=1-36
+#SBATCH --array=1-14
 
 module purge
 module load Python/3.11.5-GCCcore-13.2.0
@@ -21,7 +21,6 @@ module load Python/3.11.5-GCCcore-13.2.0
 cd /home/anthony.li/llm-watermark-cpd
 
 echo "Starting job with ID ${SLURM_JOB_ID} on ${SLURM_JOB_NODELIST}"
-echo $(which python)
 
 export PATH="/home/anthony.li/.local/bin:$PATH"
 export PYTHONPATH=".":$PYTHONPATH
@@ -29,7 +28,7 @@ export HF_HOME=/scratch/user/anthony.li/hf_cache
 
 # Determine the total number of commands by counting lines in 2-textgen-commands.sh
 total_commands=$(wc -l < 2-textgen-commands.sh)
-total_jobs=36
+total_jobs=14
 
 # Calculate the number of commands per job (minimum)
 commands_per_job=$((total_commands / total_jobs))
@@ -52,6 +51,5 @@ echo "Running tasks for commands from $start_command to $end_command"
 for i in $(seq $start_command $end_command); do
   command=$(sed -n "${i}p" 2-textgen-commands.sh)
   echo "Executing command $i: $command"
-  echo "Command $i starting time: $(date)"
   eval "$command"
 done

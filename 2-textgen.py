@@ -66,35 +66,20 @@ parser.add_argument('--truncate_vocab', default=8, type=int)
 
 args = parser.parse_args()
 
-log_file = open('log/textgen.log', 'w')
-log_file.write(str(args) + '\n')
-log_file.flush()
-
 # fix the random seed for reproducibility
 t0 = time()
 torch.manual_seed(args.seed)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-try:
-    tokenizer = AutoTokenizer.from_pretrained(
-        "/scratch/user/anthony.li/models/" + args.model + "/tokenizer")
-    model = AutoModelForCausalLM.from_pretrained(
-        "/scratch/user/anthony.li/models/" + args.model + "/model",
-        device_map = 'auto'
-    )
-
-    log_file.write(f'Loaded the local model\n')
-except:
-    tokenizer = AutoTokenizer.from_pretrained(args.model)
-    model = AutoModelForCausalLM.from_pretrained(args.model).to(device)
-    log_file.write(f'Loaded the model\n')
-
-log_file.flush()
+tokenizer = AutoTokenizer.from_pretrained(
+    "/scratch/user/anthony.li/models/" + args.model + "/tokenizer")
+model = AutoModelForCausalLM.from_pretrained(
+    "/scratch/user/anthony.li/models/" + args.model + "/model",
+    device_map='auto'
+)
 
 vocab_size = model.get_output_embeddings().weight.shape[0]
 eff_vocab_size = vocab_size - args.truncate_vocab
-log_file.write(f'Loaded the model (t = {time()-t0} seconds)\n')
-log_file.flush()
 
 try:
     dataset = load_from_disk(
@@ -225,7 +210,6 @@ else:
 
 ds_iterator = iter(dataset)
 
-t1 = time()
 
 # Iterate through the dataset to get the prompts
 prompt_save = open(args.save + '-prompt.csv', 'w')
@@ -258,7 +242,6 @@ prompts = torch.vstack(prompts)
 null_samples = []
 watermarked_samples = []
 
-t1 = time()
 pbar = tqdm(total=n_batches)
 for batch in range(n_batches):
     idx = torch.arange(batch * args.batch_size,
@@ -270,9 +253,6 @@ for batch in range(n_batches):
         prompts[idx], seeds[idx])[:, prompt_tokens:])
 
     pbar.update(1)
-    log_file.write(f'Generated batch {batch} in (t = {time()-t1} seconds)\n')
-    log_file.flush()
-    t1 = time()
 pbar.close()
 null_samples = torch.vstack(null_samples)
 watermarked_samples = torch.vstack(watermarked_samples)
@@ -283,12 +263,8 @@ watermarked_samples = torch.clip(watermarked_samples, max=eff_vocab_size-1)
 if args.nowatermark:
     watermarked_samples = null_samples
 
-log_file.write(f'Generated samples in (t = {time()-t1} seconds)\n')
-log_file.flush()
-
 # Save the text/tokens before attack and NTP for each token in the watermark
 # texts with true and empty prompt.
-t1 = time()
 tokens_before_attack_save = open(args.save + '-tokens-before-attack.csv', "w")
 tokens_before_attack_writer = csv.writer(
     tokens_before_attack_save, delimiter=",")
@@ -298,19 +274,12 @@ for tokens in watermarked_samples:
     pbar.update(1)
 pbar.close()
 tokens_before_attack_save.close()
-log_file.write(
-    f'Saved text/tokens before attack and probs in (t = {time()-t1} seconds)\n')
-log_file.flush()
 
-t1 = time()
 null_tokens_save = open(args.save + '-null.csv', 'w')
 null_tokens_writer = csv.writer(null_tokens_save, delimiter=",")
 for tokens in null_samples:
     null_tokens_writer.writerow(np.asarray(tokens.numpy()))
 null_tokens_save.close()
-log_file.write(
-    f'Saved null samples and probs in (t = {time()-t1} seconds)\n')
-log_file.flush()
 
 # Attack the watermarked texts and store a copy appended with the
 # prompt-extracting prompt in `icl_samples`.
@@ -331,14 +300,10 @@ for itm in range(T):
         watermarked_sample, skip_special_tokens=True)
     if args.rt_translate:
         watermarked_sample = rt_translate(watermarked_sample)
-    log_file.write(f'Attacked the sample {itm} with text: {watermarked_sample}\n')
-    log_file.flush()
     if args.gpt_rewrite_key:
         watermarked_sample = gpt_rewrite(
             watermarked_sample, args.gpt_rewrite_key
         )
-    log_file.write(f'Attacked the sample {itm} with text rewrite: {watermarked_sample}\n')
-    log_file.flush()
     watermarked_sample = tokenizer.encode(watermarked_sample,
                                           return_tensors='pt',
                                           truncation=True,
@@ -357,15 +322,8 @@ for itm in range(T):
         generator.manual_seed(int(seeds[itm]))
         pi = torch.randperm(vocab_size, generator=generator)
         pi_writer.writerow(np.asarray(pi.squeeze().numpy()))
-    elif args.method == "gumbel":
-        pass
-    else:
-        raise
 
     pbar.update(1)
 
 pbar.close()
-log_file.write(f'Attacked the samples in (t = {time()-t1} seconds)\n')
-log_file.flush()
-log_file.close()
 attacked_tokens_save.close()
