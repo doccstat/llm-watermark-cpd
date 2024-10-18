@@ -1,15 +1,7 @@
-import torch
-
-from collections import defaultdict
-import copy
-
+from numpy import genfromtxt
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-from numpy import genfromtxt
-
 import argparse
-
-results = defaultdict(dict)
 
 parser = argparse.ArgumentParser(description="Experiment Settings")
 
@@ -21,7 +13,6 @@ parser.add_argument('--token_file', default="", type=str)
 parser.add_argument('--detected_cpts', default='', type=str)
 
 args = parser.parse_args()
-results['args'] = copy.deepcopy(args)
 
 log_file = open(
     'log/' + args.token_file.split('results/')[1].split('.p')[0] + '-demo.log',
@@ -29,8 +20,6 @@ log_file = open(
 )
 log_file.write(str(args) + '\n')
 log_file.flush()
-
-torch.manual_seed(args.seed)
 
 tokenizer = AutoTokenizer.from_pretrained(
     "/scratch/user/anthony.li/models/" + args.model + "/tokenizer")
@@ -42,7 +31,7 @@ model = AutoModelForCausalLM.from_pretrained(
 prompt_tokens = genfromtxt(
     args.token_file + '-prompt.csv', delimiter=",", dtype=int)
 prompt_text = tokenizer.decode(
-        prompt_tokens, skip_special_tokens=True)
+    prompt_tokens, skip_special_tokens=True)
 
 tokens_before_attack = genfromtxt(
     args.token_file + '-tokens-before-attack.csv', delimiter=",", dtype=int)
