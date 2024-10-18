@@ -3,9 +3,9 @@
 #SBATCH --job-name=setup
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
-#SBATCH --time=0-00:02:00
+#SBATCH --time=0-00:00:40
 #SBATCH --partition=short,medium,long,xlong
-#SBATCH --mem-per-cpu=1GB
+#SBATCH --mem-per-cpu=300MB
 #SBATCH --output=/home/anthony.li/out/setup.%j.out
 #SBATCH --error=/home/anthony.li/out/setup.%j.err
 #SBATCH --mail-type=ALL
