@@ -133,3 +133,7 @@ savetxt(
     str(args.permutation_count) + '-detect/' + str(args.Tindex) + '-' +
     str(args.rolling_window_index) + '.csv', pval, delimiter=','
 )
+with open(args.token_file + '-' + str(args.rolling_window_size) + '-' +
+          str(args.permutation_count) + '-detect/' + str(args.Tindex) + '-' +
+          str(args.rolling_window_index) + '-time.txt', "w") as f:
+    f.write(str(end_time - start_time))
