@@ -213,8 +213,8 @@ for batch in range(n_batches):
     idx = torch.arange(batch * args.batch_size,
                        min(T, (batch + 1) * args.batch_size))
 
-    null_samples.append(generate_rnd(
-        prompts[idx], 100+buffer_tokens, model1))
+    null_samples.append(generate_rnd(model1,
+                                     prompts[idx], 100+buffer_tokens))
     watermarked_samples = generate_watermark1(
         null_samples[-1][idx], seeds[idx], 100)
     watermarked_samples = tokenizer1.decode(

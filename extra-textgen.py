@@ -17,9 +17,6 @@ import numpy as np
 from watermarking.generation import generate, generate_rnd
 from watermarking.attacks import insertion_block_attack, substitution_block_attack, gpt_rewrite
 
-from watermarking.transform.sampler import transform_sampling
-from watermarking.transform.key import transform_key_func
-
 from watermarking.gumbel.sampler import gumbel_sampling
 from watermarking.gumbel.key import gumbel_key_func
 
@@ -289,24 +286,24 @@ for batch in range(n_batches):
                        min(T, (batch + 1) * args.batch_size))
 
     if not args.meaningful:
-        null_samples.append(generate_rnd(
-            prompts[idx], new_tokens+buffer_tokens, model)[:, prompt_tokens:])
+        null_samples.append(generate_rnd(model,
+                                         prompts[idx], new_tokens+buffer_tokens)[:, prompt_tokens:])
         watermarked_samples = [
             generate_watermark(
                 prompts[idx], seeds[idx], new_tokens)[:, prompt_tokens:]
         ]
     else:
-        null_samples.append(generate_rnd(
-            prompts[idx], 100+buffer_tokens, model))
+        null_samples.append(generate_rnd(model,
+                                         prompts[idx], 100+buffer_tokens))
         watermarked_samples = generate_watermark(
             null_samples[-1][idx], seeds[idx], 100)
-        watermarked_samples = generate_rnd(
-            watermarked_samples[idx], 100+buffer_tokens, model)
+        watermarked_samples = generate_rnd(model,
+                                           watermarked_samples[idx], 100+buffer_tokens)
         watermarked_samples = generate_watermark(
             watermarked_samples[idx], seeds[idx], 100)
         watermarked_samples = [
-            generate_rnd(
-                watermarked_samples[idx], 100+buffer_tokens, model)[:, prompt_tokens:]
+            generate_rnd(model,
+                         watermarked_samples[idx], 100+buffer_tokens)[:, prompt_tokens:]
         ]
 
     pbar.update(1)

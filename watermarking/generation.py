@@ -2,8 +2,8 @@ import torch
 
 
 def generate(
-        model, prompts, vocab_size, n, m, seeds, key_func, sampler,
-        random_offset=True
+        model, prompts, vocab_size, watermark_key_length, tokens_count, seeds,
+        key_func, sampler, random_offset=True
 ):
     batch_size = len(prompts)
 
@@ -11,7 +11,7 @@ def generate(
     xis, pis = [], []
     for seed in seeds:
         generator.manual_seed(int(seed))
-        xi, pi = key_func(generator, n, vocab_size)
+        xi, pi = key_func(generator, watermark_key_length, vocab_size)
         xis.append(xi.unsqueeze(0))
         pis.append(pi.unsqueeze(0))
     xis = torch.vstack(xis)
@@ -19,13 +19,13 @@ def generate(
 
     # deliberately not controlling this randomness with the generator
     if random_offset:
-        offset = torch.randint(n, size=(batch_size,))
+        offset = torch.randint(watermark_key_length, size=(batch_size,))
     else:
         offset = torch.zeros(size=(batch_size,), dtype=torch.int64)
     inputs = prompts.to(model.device)
     attn = torch.ones_like(inputs)
     past = None
-    for i in range(m):
+    for i in range(tokens_count):
         with torch.no_grad():
             if past:
                 output = model(
@@ -35,7 +35,7 @@ def generate(
 
         probs = torch.nn.functional.softmax(output.logits[:, -1], dim=-1).cpu()
         tokens = sampler(probs, pis, xis[torch.arange(
-            batch_size), (offset.squeeze()+i) % n]).to(model.device)
+            batch_size), (offset.squeeze()+i) % watermark_key_length]).to(model.device)
         inputs = torch.cat([inputs, tokens], dim=-1)
 
         past = output.past_key_values
@@ -43,14 +43,12 @@ def generate(
 
     return inputs.detach().cpu()
 
-# generate unwatermarked completions of token length m given list of prompts
 
-
-def generate_rnd(prompts, m, model):
+def generate_rnd(model, prompts, tokens_count):
     inputs = prompts.to(model.device)
     attn = torch.ones_like(inputs)
     past = None
-    for i in range(m):
+    for i in range(tokens_count):
         with torch.no_grad():
             if past:
                 output = model(

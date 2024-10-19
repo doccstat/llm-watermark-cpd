@@ -1,68 +1,56 @@
-from time import time
+from numpy import ceil
+
+from argparse import ArgumentParser
+from tqdm import tqdm
+from transformers import (
+    AutoTokenizer, AutoModelForCausalLM, LogitsProcessorList
+)
+from transformers import MarianMTModel, MarianTokenizer
+
+from watermarking.kirchenbauer.watermark_processor import (
+    WatermarkLogitsProcessor, WatermarkDetector
+)
+
+from csv import writer
+from datasets import load_dataset, load_from_disk
+from numpy import asarray
+
+from watermarking.attacks import (
+    insertion_block_attack, substitution_block_attack, gpt_rewrite
+)
+from watermarking.generation import generate
+from watermarking.gumbel.key import gumbel_key_func
+from watermarking.gumbel.sampler import gumbel_sampling
+from watermarking.transform.key import transform_key_func
+from watermarking.transform.sampler import transform_sampling
 
 import torch
 
-from transformers import AutoTokenizer, AutoModelForCausalLM, LogitsProcessorList
-from transformers import MarianMTModel, MarianTokenizer
+parser = ArgumentParser(description="Experiment Settings")
 
-from datasets import load_dataset, load_from_disk
-
-from tqdm import tqdm
-
-import numpy as np
-
-from watermarking.generation import generate, generate_rnd
-from watermarking.attacks import insertion_block_attack, substitution_block_attack, gpt_rewrite
-
-from watermarking.transform.sampler import transform_sampling
-from watermarking.transform.key import transform_key_func
-
-from watermarking.gumbel.sampler import gumbel_sampling
-from watermarking.gumbel.key import gumbel_key_func
-
-from watermarking.kirchenbauer.watermark_processor import WatermarkLogitsProcessor, WatermarkDetector
-
-import argparse
-
-import csv
-
-parser = argparse.ArgumentParser(description="Experiment Settings")
-
-parser.add_argument('--method', default="transform", type=str)
-
-parser.add_argument('--model', default="facebook/opt-1.3b", type=str)
 parser.add_argument('--save', default="", type=str)
+parser.add_argument('--model', default="facebook/opt-1.3b", type=str)
+parser.add_argument('--method', default="transform", type=str)
+parser.add_argument('--watermark_key_length', default=256, type=int)
+parser.add_argument('--number_of_experiments', default=500, type=int)
+
 parser.add_argument('--seed', default=0, type=int)
 parser.add_argument('--batch_size', default=1, type=int)
-
-parser.add_argument('--tokens_count', default=80, type=int)
-parser.add_argument('--watermark_key_length', default=256, type=int)
-parser.add_argument('--T', default=500, type=int)
+parser.add_argument('--gpt_rewrite_key', default='', type=str)
 
 parser.add_argument('--prompt_tokens', default=50, type=int)
 parser.add_argument('--buffer_tokens', default=20, type=int)
-parser.add_argument('--n_runs', default=5000, type=int)
-parser.add_argument('--max_seed', default=100000, type=int)
-parser.add_argument('--offset', action='store_true')
-
-parser.add_argument('--gamma', default=0.4, type=float)
-parser.add_argument('--nowatermark', action='store_true')
-
-# comma separated values
+parser.add_argument('--tokens_count', default=80, type=int)
 parser.add_argument('--substitution_blocks_start', default="0", type=str)
 parser.add_argument('--substitution_blocks_end', default="0", type=str)
 parser.add_argument('--insertion_blocks_start', default="0", type=str)
 parser.add_argument('--insertion_blocks_length', default="0", type=str)
-
-parser.add_argument('--gpt_rewrite_key', default='', type=str)
-
-parser.add_argument('--kirch_gamma', default=0.25, type=float)
-parser.add_argument('--kirch_delta', default=1.0, type=float)
-
 parser.add_argument('--rt_translate', action='store_true')
 parser.add_argument('--language', default="french", type=str)
-
 parser.add_argument('--truncate_vocab', default=8, type=int)
+parser.add_argument('--offset', action='store_true')
+parser.add_argument('--kirch_gamma', default=0.25, type=float)
+parser.add_argument('--kirch_delta', default=1.0, type=float)
 
 args = parser.parse_args()
 
@@ -90,20 +78,21 @@ except:
 
 
 def corrupt(tokens):
-    tokens = substitution_block_attack(tokens, list(map(int, args.substitution_blocks_start.split(
-        ','))), list(map(int, args.substitution_blocks_end.split(','))), eff_vocab_size)
-    tokens = insertion_block_attack(tokens, list(map(int, args.insertion_blocks_start.split(
-        ','))), list(map(int, args.insertion_blocks_length.split(','))), eff_vocab_size)
+    tokens = substitution_block_attack(
+        tokens,
+        list(map(int, args.substitution_blocks_start.split(','))),
+        list(map(int, args.substitution_blocks_end.split(','))),
+        eff_vocab_size
+    )
+    tokens = insertion_block_attack(
+        tokens,
+        list(map(int, args.insertion_blocks_start.split(','))),
+        list(map(int, args.insertion_blocks_length.split(','))),
+        eff_vocab_size
+    )
 
     return tokens
 
-
-T = args.T                  # number of prompts/generations
-n_batches = int(np.ceil(T / args.batch_size))  # number of batches
-prompt_tokens = args.prompt_tokens      # minimum prompt length
-new_tokens = args.tokens_count
-buffer_tokens = args.buffer_tokens
-n = args.watermark_key_length
 
 if args.rt_translate:
     if args.language == "french":
@@ -148,10 +137,10 @@ if args.rt_translate:
 
 # this is the "key" for the watermark
 # for now each generation gets its own key
-seeds = torch.randint(2**32, (T,))
+seeds = torch.randint(2**32, (args.number_of_experiments,))
 seeds_save = open(args.save + '-seeds.csv', 'w')
-seeds_writer = csv.writer(seeds_save, delimiter=",")
-seeds_writer.writerow(np.asarray(seeds.squeeze().numpy()))
+seeds_writer = writer(seeds_save, delimiter=",")
+seeds_writer.writerow(asarray(seeds.squeeze().numpy()))
 seeds_save.close()
 
 if args.method == "transform":
@@ -160,8 +149,8 @@ if args.method == "transform":
             model,
             prompt,
             vocab_size,
-            n,
-            new_tokens+buffer_tokens,
+            args.watermark_key_length,
+            args.tokens_count+args.buffer_tokens,
             seed,
             transform_key_func,
             transform_sampling,
@@ -174,8 +163,8 @@ elif args.method == "gumbel":
             model,
             prompt,
             vocab_size,
-            n,
-            new_tokens+buffer_tokens,
+            args.watermark_key_length,
+            args.tokens_count+args.buffer_tokens,
             seed,
             gumbel_key_func,
             gumbel_sampling,
@@ -183,25 +172,27 @@ elif args.method == "gumbel":
         )
 
 elif args.method == "kirchenbauer":
-    watermark_processor = WatermarkLogitsProcessor(vocab=list(tokenizer.get_vocab().values()),
-                                                   gamma=args.kirch_gamma,
-                                                   delta=args.kirch_delta,
-                                                   seeding_scheme="simple_1")
+    watermark_processor = WatermarkLogitsProcessor(
+        vocab=list(tokenizer.get_vocab().values()),
+        gamma=args.kirch_gamma,
+        delta=args.kirch_delta,
+        seeding_scheme="simple_1")
 
-    watermark_detector = WatermarkDetector(vocab=list(tokenizer.get_vocab().values()),
-                                           gamma=args.kirch_gamma,  # should match original setting
-                                           seeding_scheme="simple_1",  # should match original setting
-                                           device=model.device,  # must match the original rng device type
-                                           tokenizer=tokenizer,
-                                           z_threshold=1.5,
-                                           normalizers=[],
-                                           ignore_repeated_bigrams=False)
+    watermark_detector = WatermarkDetector(
+        vocab=list(tokenizer.get_vocab().values()),
+        gamma=args.kirch_gamma,  # should match original setting
+        seeding_scheme="simple_1",  # should match original setting
+        device=model.device,  # must match the original rng device type
+        tokenizer=tokenizer,
+        z_threshold=1.5,
+        normalizers=[],
+        ignore_repeated_bigrams=False)
 
     def generate_watermark(prompt, seed=None): return model.generate(
         prompt.to(model.device),
         do_sample=True,
-        max_new_tokens=new_tokens+buffer_tokens,
-        min_new_tokens=new_tokens+buffer_tokens,
+        max_new_tokens=args.tokens_count+args.buffer_tokens,
+        min_new_tokens=args.tokens_count+args.buffer_tokens,
         top_k=0,
         logits_processor=LogitsProcessorList([watermark_processor])).cpu()
 else:
@@ -209,14 +200,13 @@ else:
 
 ds_iterator = iter(dataset)
 
-
 # Iterate through the dataset to get the prompts
 prompt_save = open(args.save + '-prompt.csv', 'w')
-prompt_writer = csv.writer(prompt_save, delimiter=",")
+prompt_writer = writer(prompt_save, delimiter=",")
 prompts = []
 itm = 0
-pbar = tqdm(total=T)
-while itm < T:
+pbar = tqdm(total=args.number_of_experiments)
+while itm < args.number_of_experiments:
     example = next(ds_iterator)
     text = example['text']
 
@@ -224,13 +214,13 @@ while itm < T:
         text,
         return_tensors='pt',
         truncation=True,
-        max_length=2048-buffer_tokens
+        max_length=2048-args.buffer_tokens
     )[0]
-    if len(tokens) < prompt_tokens + new_tokens:
+    if len(tokens) < args.prompt_tokens + args.tokens_count:
         continue
-    prompt = tokens[-(new_tokens+prompt_tokens):-new_tokens]
+    prompt = tokens[-(args.tokens_count+args.prompt_tokens):-args.tokens_count]
     prompts.append(prompt)
-    prompt_writer.writerow(np.asarray(prompt.numpy()))
+    prompt_writer.writerow(asarray(prompt.numpy()))
 
     itm += 1
     pbar.update(1)
@@ -238,61 +228,48 @@ pbar.close()
 prompt_save.close()
 prompts = torch.vstack(prompts)
 
-null_samples = []
 watermarked_samples = []
 
-pbar = tqdm(total=n_batches)
-for batch in range(n_batches):
-    idx = torch.arange(batch * args.batch_size,
-                       min(T, (batch + 1) * args.batch_size))
+batch_count = int(ceil(args.number_of_experiments / args.batch_size))
+pbar = tqdm(total=batch_count)
+for batch in range(batch_count):
+    idx = torch.arange(
+        batch * args.batch_size,
+        min(args.number_of_experiments, (batch + 1) * args.batch_size))
 
-    null_samples.append(generate_rnd(
-        prompts[idx], new_tokens+buffer_tokens, model)[:, prompt_tokens:])
     watermarked_samples.append(generate_watermark(
-        prompts[idx], seeds[idx])[:, prompt_tokens:])
+        prompts[idx], seeds[idx])[:, args.prompt_tokens:])
 
     pbar.update(1)
 pbar.close()
-null_samples = torch.vstack(null_samples)
 watermarked_samples = torch.vstack(watermarked_samples)
-
-null_samples = torch.clip(null_samples, max=eff_vocab_size-1)
 watermarked_samples = torch.clip(watermarked_samples, max=eff_vocab_size-1)
-
-if args.nowatermark:
-    watermarked_samples = null_samples
 
 # Save the text/tokens before attack and NTP for each token in the watermark
 # texts with true and empty prompt.
 tokens_before_attack_save = open(args.save + '-tokens-before-attack.csv', "w")
-tokens_before_attack_writer = csv.writer(
+tokens_before_attack_writer = writer(
     tokens_before_attack_save, delimiter=",")
 pbar = tqdm(total=len(watermarked_samples))
 for tokens in watermarked_samples:
-    tokens_before_attack_writer.writerow(np.asarray(tokens.numpy()))
+    tokens_before_attack_writer.writerow(asarray(tokens.numpy()))
     pbar.update(1)
 pbar.close()
 tokens_before_attack_save.close()
-
-null_tokens_save = open(args.save + '-null.csv', 'w')
-null_tokens_writer = csv.writer(null_tokens_save, delimiter=",")
-for tokens in null_samples:
-    null_tokens_writer.writerow(np.asarray(tokens.numpy()))
-null_tokens_save.close()
 
 # Attack the watermarked texts and store a copy appended with the
 # prompt-extracting prompt in `icl_samples`.
 attacked_tokens_save = open(
     args.save + "-attacked-tokens.csv", "w")
-attacked_tokens_writer = csv.writer(attacked_tokens_save, delimiter=",")
+attacked_tokens_writer = writer(attacked_tokens_save, delimiter=",")
 pi_save = None
 pi_writer = None
 if args.method == "transform":
     pi_save = open(args.save + "-pi.csv", "w")
-    pi_writer = csv.writer(pi_save, delimiter=",")
+    pi_writer = writer(pi_save, delimiter=",")
 
-pbar = tqdm(total=T)
-for itm in range(T):
+pbar = tqdm(total=args.number_of_experiments)
+for itm in range(args.number_of_experiments):
     watermarked_sample = watermarked_samples[itm]
     watermarked_sample = corrupt(watermarked_sample)
     watermarked_sample = tokenizer.decode(
@@ -307,20 +284,20 @@ for itm in range(T):
                                           return_tensors='pt',
                                           truncation=True,
                                           max_length=2048)[0]
-    if len(watermarked_sample) < new_tokens + 1:
+    if len(watermarked_sample) < args.tokens_count + 1:
         watermarked_sample = torch.nn.functional.pad(
-            watermarked_sample, (new_tokens-len(watermarked_sample), 0),
+            watermarked_sample, (args.tokens_count-len(watermarked_sample), 0),
             "constant", 0
         )
     else:
-        watermarked_sample = watermarked_sample[1:new_tokens+1+sum(
+        watermarked_sample = watermarked_sample[1:args.tokens_count+1+sum(
             list(map(int, args.insertion_blocks_length.split(','))))]
-    attacked_tokens_writer.writerow(np.asarray(watermarked_sample.numpy()))
+    attacked_tokens_writer.writerow(asarray(watermarked_sample.numpy()))
     if args.method == "transform":
         generator = torch.Generator()
         generator.manual_seed(int(seeds[itm]))
         pi = torch.randperm(vocab_size, generator=generator)
-        pi_writer.writerow(np.asarray(pi.squeeze().numpy()))
+        pi_writer.writerow(asarray(pi.squeeze().numpy()))
 
     pbar.update(1)
 
