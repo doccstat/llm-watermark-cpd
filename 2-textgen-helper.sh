@@ -5,7 +5,7 @@ number_of_experiments=500
 seed=1
 batch_size=25
 
-rm 2-textgen-commands.sh
+rm -f 2-textgen-commands.sh
 
 for model_prefix in opt gpt ml3; do
   for method in gumbel transform; do
