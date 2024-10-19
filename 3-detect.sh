@@ -6,8 +6,8 @@
 #SBATCH --time=1-00:00:00
 #SBATCH --partition=medium,long,xlong
 #SBATCH --mem-per-cpu=500MB
-#SBATCH --output=/home/anthony.li/out/detect.%A.%a.out
-#SBATCH --error=/home/anthony.li/out/detect.%A.%a.err
+#SBATCH --output=/home/anthony.li/llm-watermark-cpd/log/detect.%A.%a.out
+#SBATCH --error=/home/anthony.li/llm-watermark-cpd/log/detect.%A.%a.err
 #SBATCH --mail-type=FAIL,TIME_LIMIT,END
 #SBATCH --mail-user=anthony.li@tamu.edu
 #SBATCH --array=1-1000

@@ -9,8 +9,8 @@
 #SBATCH --gres=gpu:a30:2
 
 #SBATCH --mem=5GB
-#SBATCH --output=/home/anthony.li/out/textgen.%A.%a.out
-#SBATCH --error=/home/anthony.li/out/textgen.%A.%a.err
+#SBATCH --output=/home/anthony.li/llm-watermark-cpd/log/textgen.%A.%a.out
+#SBATCH --error=/home/anthony.li/llm-watermark-cpd/log/textgen.%A.%a.err
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=anthony.li@tamu.edu
 #SBATCH --array=25-28,31-34
