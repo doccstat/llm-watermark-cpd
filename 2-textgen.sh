@@ -13,7 +13,7 @@
 #SBATCH --error=/home/anthony.li/out/textgen.%A.%a.err
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=anthony.li@tamu.edu
-#SBATCH --array=1-14
+#SBATCH --array=25-28,31-34
 
 module purge
 module load Python/3.11.5-GCCcore-13.2.0
@@ -28,7 +28,10 @@ export HF_HOME=/scratch/user/anthony.li/hf_cache
 
 # Determine the total number of commands by counting lines in 2-textgen-commands.sh
 total_commands=$(wc -l < 2-textgen-commands.sh)
-total_jobs=14
+
+# The total number of concurrently running jobs. This number should be the
+# smaller of the maximum array id and the total number of commands.
+total_jobs=38
 
 # Calculate the number of commands per job (minimum)
 commands_per_job=$((total_commands / total_jobs))

@@ -24,6 +24,9 @@ export PYTHONPATH=".":$PYTHONPATH
 
 # Determine the total number of commands by counting lines in 3-detect-commands.sh
 total_commands=$(wc -l < 3-detect-commands.sh)
+
+# The total number of concurrently running jobs. This number should be the
+# smaller of the maximum array id and the total number of commands.
 total_jobs=1000
 
 # Calculate the number of commands per job (minimum)
