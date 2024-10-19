@@ -6,13 +6,13 @@ def sliding_permutation_test(
     tokens, vocab_size, watermark_key_length, rolling_window_size,
     permutation_count, seed, rolling_window_index, test_stats, max_seed=100000
 ):
-    pvalues = np.full((len(test_stats), 1), np.nan)
+    pvalues = np.full((1, len(test_stats)), np.nan)
     if (rolling_window_index < rolling_window_size // 2 or
             rolling_window_index >= len(tokens) - rolling_window_size // 2):
         return pvalues
     rolling_window_start = rolling_window_index - rolling_window_size // 2
     rolling_window_end = rolling_window_index + rolling_window_size // 2 + 1
-    pvalues[:, 0] = permutation_test(
+    pvalues[0, :] = permutation_test(
         tokens[rolling_window_start:rolling_window_end],
         vocab_size,
         watermark_key_length,
