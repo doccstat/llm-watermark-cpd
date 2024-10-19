@@ -23,7 +23,7 @@ for method in gumbel transform; do
 
         for prompt_index in $(seq 0 499); do
           for rolling_window_index in $(seq 0 499); do
-            echo "python detect.py --token_file results/$model_prefix-$method-$watermark_key_length-$cpts --model $model --method $method --watermark_key_length $watermark_key_length --rolling_window_size $rolling_window_size --permutation_count $permutation_count --seed $seed --Tindex $prompt_index --rolling_window_index $rolling_window_index" >> 3-detect-commands.sh
+            echo "python 3-detect.py --token_file results/$model_prefix-$method-$watermark_key_length-$cpts --model $model --method $method --watermark_key_length $watermark_key_length --rolling_window_size $rolling_window_size --permutation_count $permutation_count --seed $seed --Tindex $prompt_index --rolling_window_index $rolling_window_index" >> 3-detect-commands.sh
           done
         done
       done

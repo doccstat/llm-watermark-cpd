@@ -65,6 +65,15 @@ sacct -j $jobid --format=JobID,JobName,State,ExitCode --noheader | grep textgen
 bash 3-detect-helper.sh
 jobid=$(sbatch --parsable 3-detect.sh)
 sacct -j $jobid --format=JobID,JobName,State,ExitCode --noheader | grep detect
+sacct -j $jobid --format=JobID,JobName,State,ExitCode --parsable2 | awk -F'|' '
+  /detect/ {
+    if ($3 == "COMPLETED") { completed++ }
+    if ($3 == "RUNNING" ) { running++ }
+  }
+  END {
+    print "Completed:", completed
+    print "Running:", running
+  }'
 ```
 
 ### Change point analysis
