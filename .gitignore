@@ -160,7 +160,6 @@ cython_debug/
 #.idea/
 
 results/
-log/
 watermarking/transform/*.c
 watermarking/gumbel/*.c
 detect-commands.sh
