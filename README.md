@@ -55,23 +55,17 @@ sbatch 1-setup.sh
 
 ```shell
 bash 2-textgen-helper.sh
-sbatch 2-textgen.sh
+jobid=$(sbatch --parsable 2-textgen.sh)
+sacct -j $jobid --format=JobID,JobName,State,ExitCode --noheader | grep textgen
 ```
 
 ### Rolling window watermark detection.
 
 ```shell
 bash 3-detect-helper.sh
-sbatch 3-detect.sh
+jobid=$(sbatch --parsable 3-detect.sh)
+sacct -j $jobid --format=JobID,JobName,State,ExitCode --noheader | grep detect
 ```
-
-#### Expected running time
-
-Less than 24 hours on 8 compute nodes with no GPU and 28 CPU cores each.
-
-#### Expected memory usage
-
-Less than 10 GB per compute node.
 
 ### Change point analysis
 
