@@ -3,7 +3,7 @@
 #SBATCH --job-name=detect
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
-#SBATCH --time=1-00:00:00
+#SBATCH --time=0-12:00:00
 #SBATCH --partition=medium,long,xlong
 #SBATCH --mem-per-cpu=500MB
 #SBATCH --output=/home/anthony.li/llm-watermark-cpd/log/detect.%A.%a.out
