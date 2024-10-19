@@ -4,16 +4,16 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 
-#SBATCH --time=0-04:00:00
+#SBATCH --time=0-00:40:00
 #SBATCH --partition=gpu,xgpu
 #SBATCH --gres=gpu:a30:2
 
-#SBATCH --mem=5GB
+#SBATCH --mem=25GB
 #SBATCH --output=/home/anthony.li/llm-watermark-cpd/log/textgen.%A.%a.out
 #SBATCH --error=/home/anthony.li/llm-watermark-cpd/log/textgen.%A.%a.err
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=anthony.li@tamu.edu
-#SBATCH --array=25-28,31-34
+#SBATCH --array=1-38
 
 module purge
 module load Python/3.11.5-GCCcore-13.2.0
