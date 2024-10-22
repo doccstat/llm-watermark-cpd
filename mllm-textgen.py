@@ -2,8 +2,7 @@ from time import time
 
 import torch
 
-from transformers import AutoTokenizer, AutoModelForCausalLM, LogitsProcessorList
-from transformers import MarianMTModel, MarianTokenizer
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 from datasets import load_dataset, load_from_disk
 
@@ -15,15 +14,9 @@ import copy
 import numpy as np
 
 from watermarking.generation import generate, generate_rnd
-from watermarking.attacks import insertion_block_attack, substitution_block_attack, gpt_rewrite
-
-from watermarking.transform.sampler import transform_sampling
-from watermarking.transform.key import transform_key_func
 
 from watermarking.gumbel.sampler import gumbel_sampling
 from watermarking.gumbel.key import gumbel_key_func
-
-from watermarking.kirchenbauer.watermark_processor import WatermarkLogitsProcessor, WatermarkDetector
 
 import argparse
 
