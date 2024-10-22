@@ -20,7 +20,7 @@ cd /home/anthony.li/llm-watermark-cpd
 echo "Starting job with ID ${SLURM_JOB_ID} on ${SLURM_JOB_NODELIST}"
 
 # Total number of commands and jobs
-total_commands=11280
+total_commands=$(wc -l < seedbs-commands.sh)
 total_jobs=1000
 
 # Calculate the number of commands per job (minimum)
