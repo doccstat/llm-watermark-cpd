@@ -20,7 +20,7 @@ cd /home/anthony.li/llm-watermark-cpd
 echo "Starting job with ID ${SLURM_JOB_ID} on ${SLURM_JOB_NODELIST}"
 
 # Total number of commands and jobs
-total_commands=$(wc -l < seedbs-commands.sh)
+total_commands=$(wc -l < 4-seedbs-commands.sh)
 total_jobs=1000
 
 # Calculate the number of commands per job (minimum)
@@ -42,7 +42,7 @@ echo "Running tasks for commands from $start_command to $end_command"
 
 # Loop over the designated commands for this job
 for i in $(seq $start_command $end_command); do
-    command=$(sed -n "${i}p" seedbs-commands.sh)
+    command=$(sed -n "${i}p" 4-seedbs-commands.sh)
     echo "Executing command $i: $command"
     eval "$command"
 done

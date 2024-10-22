@@ -83,16 +83,16 @@ sacct -j $jobid --format=JobID,JobName,State,ExitCode --parsable2 | awk -F'|' '
 ### Change point analysis
 
 ```shell
-rm -f seedbs-commands.sh
+rm -f 4-seedbs-commands.sh
 for template_index in $(seq 1 24); do
   for prompt_index in $(seq 0 9); do
     for seeded_interval_index in $(seq 1 47); do
-      echo "Rscript seedbs.R $template_index $prompt_index $seeded_interval_index" >> seedbs-commands.sh
+      echo "Rscript 4-seedbs.R $template_index $prompt_index $seeded_interval_index" >> 4-seedbs-commands.sh
     done
   done
 done
 
-sbatch seedbs.sh
+sbatch 4-seedbs.sh
 ```
 
 ```shell
