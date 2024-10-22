@@ -235,11 +235,11 @@ elif args.method == "kirchenbauer":
                                            normalizers=[],
                                            ignore_repeated_bigrams=False)
 
-    def generate_watermark(prompt, seed=None): return model.generate(
+    def generate_watermark(prompt, seed=None, nt = None): return model.generate(
         prompt.to(model.device),
         do_sample=True,
-        max_new_tokens=new_tokens+buffer_tokens,
-        min_new_tokens=new_tokens+buffer_tokens,
+        max_new_tokens=nt+buffer_tokens,
+        min_new_tokens=nt+buffer_tokens,
         top_k=0,
         logits_processor=LogitsProcessorList([watermark_processor])).cpu()
 else:
@@ -287,23 +287,23 @@ for batch in range(n_batches):
 
     if not args.meaningful:
         null_samples.append(generate_rnd(model,
-                                         prompts[idx], new_tokens+buffer_tokens)[:, prompt_tokens:])
+            prompts[idx], new_tokens+buffer_tokens)[:, prompt_tokens:])
         watermarked_samples = [
             generate_watermark(
                 prompts[idx], seeds[idx], new_tokens)[:, prompt_tokens:]
         ]
     else:
         null_samples.append(generate_rnd(model,
-                                         prompts[idx], 100+buffer_tokens))
+            prompts[idx], 100+buffer_tokens))
         watermarked_samples = generate_watermark(
             null_samples[-1][idx], seeds[idx], 100)
         watermarked_samples = generate_rnd(model,
-                                           watermarked_samples[idx], 100+buffer_tokens)
+            watermarked_samples[idx], 100+buffer_tokens)
         watermarked_samples = generate_watermark(
             watermarked_samples[idx], seeds[idx], 100)
         watermarked_samples = [
             generate_rnd(model,
-                         watermarked_samples[idx], 100+buffer_tokens)[:, prompt_tokens:]
+                watermarked_samples[idx], 100+buffer_tokens)[:, prompt_tokens:]
         ]
 
     pbar.update(1)
@@ -403,10 +403,6 @@ for itm in range(T):
         generator.manual_seed(int(seeds[itm]))
         pi = torch.randperm(vocab_size, generator=generator)
         pi_writer.writerow(np.asarray(pi.squeeze().numpy()))
-    elif args.method == "gumbel":
-        pass
-    else:
-        raise
 
     pbar.update(1)
 

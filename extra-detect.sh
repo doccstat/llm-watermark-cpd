@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name=extra-detect
-#SBATCH --ntasks=32
+#SBATCH --ntasks=33
 #SBATCH --cpus-per-task=1
 #SBATCH --time=1-00:00:00
 #SBATCH --partition=medium,long,xlong
@@ -62,5 +62,7 @@ python extra-detect.py --token_file "results/ml3-random-12cpts-text5-gumbel.p" -
 
 python extra-detect.py --token_file "results/ml3-concat-text5-gumbel.p" --n 1000 --model meta-llama/Meta-Llama-3-8B --seed 1 --Tindex 0 --k 20 --method gumbel --fixed_i ${fixed_i} &
 python extra-detect.py --token_file "results/ml3-concat-french-text5-gumbel.p" --n 1000 --model meta-llama/Meta-Llama-3-8B --seed 1 --Tindex 0 --k 20 --method gumbel --fixed_i ${fixed_i} &
+
+python extra-detect.py --token_file "results/ml3-random-3cpts-text1-kirchenbauer.p" --n 1000 --model meta-llama/Meta-Llama-3-8B --seed 1 --Tindex 0 --k 20 --method kirchenbauer --fixed_i ${fixed_i} --kirch_delta 1.5
 
 wait

@@ -6,6 +6,9 @@ models_folders_prefix <- c("ml3")
 generation_methods <- c("gumbel")
 cpts <- c(3, 4, 6, 8, 9, 12)
 texts <- seq_len(5)
+# generation_methods <- c("kirchenbauer")
+# cpts <- c(3)
+# texts <- seq_len(1)
 experiment_settings <- NULL
 for (cpt_index in seq_along(cpts)) {
   for (text_index in seq_along(texts)) {

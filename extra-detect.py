@@ -7,6 +7,8 @@ import copy
 import numpy as np
 from numpy import genfromtxt
 
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
 from watermarking.detection import sliding_permutation_test, phi
 
 from watermarking.transform.score import transform_score, transform_edit_score
@@ -14,6 +16,8 @@ from watermarking.transform.key import transform_key_func
 
 from watermarking.gumbel.score import gumbel_score, gumbel_edit_score
 from watermarking.gumbel.key import gumbel_key_func
+
+from watermarking.kirchenbauer.watermark_processor import WatermarkDetector
 
 import argparse
 
@@ -138,20 +142,20 @@ if args.method == "transform":
     test_stats.append(test_stat2)
 elif args.method == "gumbel":
     test_stats = []
-    # def dist1(x, y): return gumbel_edit_score(x, y, gamma=args.gamma)
+    def dist1(x, y): return gumbel_edit_score(x, y, gamma=args.gamma)
 
-    # def test_stat1(tokens, n, k, generator, vocab_size, null=False): return phi(
-    #     tokens=tokens,
-    #     n=n,
-    #     k=k,
-    #     generator=generator,
-    #     key_func=gumbel_key_func,
-    #     vocab_size=vocab_size,
-    #     dist=dist1,
-    #     null=null,
-    #     normalize=False
-    # )
-    # test_stats.append(test_stat1)
+    def test_stat1(tokens, n, k, generator, vocab_size, null=False): return phi(
+        tokens=tokens,
+        n=n,
+        k=k,
+        generator=generator,
+        key_func=gumbel_key_func,
+        vocab_size=vocab_size,
+        dist=dist1,
+        null=null,
+        normalize=False
+    )
+    test_stats.append(test_stat1)
     def dist2(x, y): return gumbel_score(x, y)
 
     def test_stat2(tokens, n, k, generator, vocab_size, null=False): return phi(
@@ -166,6 +170,29 @@ elif args.method == "gumbel":
         normalize=False
     )
     test_stats.append(test_stat2)
+elif args.method == "kirchenbauer":
+    test_stats = []
+
+    try:
+        tokenizer = AutoTokenizer.from_pretrained(
+            "/scratch/user/anthony.li/models/" + args.model + "/tokenizer")
+    except:
+        tokenizer = AutoTokenizer.from_pretrained(args.model)
+
+    watermark_detector = WatermarkDetector(vocab=list(tokenizer.get_vocab().values()),
+                                            gamma=args.kirch_gamma, # should match original setting
+                                            seeding_scheme="simple_1", # should match original setting
+                                            device='cpu', # must match the original rng device type
+                                            tokenizer=tokenizer,
+                                            z_threshold=1.5,
+                                            normalizers=[],
+                                            ignore_repeated_bigrams=False)
+    def test_stat(tokens, n, k, generator, vocab_size, null=False):
+        try:
+            return torch.tensor(-watermark_detector.detect(tokenizer.decode(tokens, skip_special_tokens=True))['z_score'])
+        except:
+            return torch.tensor(0.0)
+    test_stats.append(test_stat)
 else:
     raise
 

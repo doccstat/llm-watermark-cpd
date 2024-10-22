@@ -462,3 +462,19 @@ python extra-textgen.py \
   --rt_translate \
   --language french \
   --buffer_tokens 0
+
+################################################################################
+
+python extra-textgen.py \
+  --save results/ml3-random-3cpts-text1-kirchenbauer.p \
+  --watermark_key_length $n \
+  --batch_size 10 \
+  --tokens_count 500 \
+  --model meta-llama/Meta-Llama-3-8B \
+  --seed 1 \
+  --T 1 \
+  --k 20 \
+  --method kirchenbauer \
+  --cpts 3 \
+  --npseed 1 \
+  --kirch_delta 1.5
