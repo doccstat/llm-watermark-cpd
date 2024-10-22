@@ -204,3 +204,14 @@ done
 # Citation
 
 TBD
+
+```bibtex
+@inproceedings{
+  anonymous2024segmenting,
+  title={Segmenting Watermarked Texts From Language Models},
+  author={Anonymous},
+  booktitle={The Thirty-eighth Annual Conference on Neural Information Processing Systems},
+  year={2024},
+  url={https://openreview.net/forum?id=FAuFpGeLmx}
+}
+```
