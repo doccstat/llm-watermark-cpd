@@ -67,10 +67,14 @@ jobid=$(sbatch --parsable 3-detect.sh)
 sacct -j $jobid --format=JobID,JobName,State,ExitCode --noheader | grep detect
 sacct -j $jobid --format=JobID,JobName,State,ExitCode --parsable2 | awk -F'|' '
   /detect/ {
+    if ($3 == "NODE_FAIL") { node_fail++ }
+    if ($3 == "PENDING") { pending++ }
     if ($3 == "COMPLETED") { completed++ }
     if ($3 == "RUNNING" ) { running++ }
   }
   END {
+    print "Node fail:", node_fail
+    print "Pending:", pending
     print "Completed:", completed
     print "Running:", running
   }'

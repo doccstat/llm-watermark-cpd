@@ -3,9 +3,9 @@
 #SBATCH --job-name=detect
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
-#SBATCH --time=1-00:00:00
-#SBATCH --partition=medium,long,xlong
-#SBATCH --mem-per-cpu=400MB
+#SBATCH --time=2-00:00:00
+#SBATCH --partition=long,xlong
+#SBATCH --mem-per-cpu=800MB
 #SBATCH --output=/home/anthony.li/llm-watermark-cpd/log/detect.%A.%a.out
 #SBATCH --error=/home/anthony.li/llm-watermark-cpd/log/detect.%A.%a.err
 #SBATCH --mail-type=FAIL,TIME_LIMIT,END
