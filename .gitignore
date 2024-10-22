@@ -165,3 +165,5 @@ extra-seedbs-commands.sh
 mllm-seedbs-commands.sh
 2-textgen-commands.sh
 3-detect-commands.sh
+results/
+*.tar.gz

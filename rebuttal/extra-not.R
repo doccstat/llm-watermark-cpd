@@ -305,3 +305,97 @@ ggplot2::ggsave(
   width = 10,
   height = 4
 )
+
+################################################################################
+
+ggplot2::ggplot() +
+  ggplot2::geom_line(
+    data = data.frame(
+      x = seq_len(250),
+      y = pvalue_matrices[["results/ml3-concat-text5-gumbel.p-detect/XXX-gumbel-YYY.csv"]][1, seq_len(250)]
+    ),
+    ggplot2::aes(x = x, y = y)
+  ) +
+  ggplot2::theme_minimal() +
+  ggplot2::labs(x = "Token Index", y = "P-value")
+ggplot2::ggsave("results/ml3-concat-text5-gumbel.p-pvalue.pdf", width = 10, height = 4)
+
+seeded_intervals_df$index <- rev(seq_len(nrow(seeded_intervals_df)))
+
+ggplot2::ggplot() +
+  ggplot2::geom_segment(
+    data = seeded_intervals_df,
+    ggplot2::aes(
+      x = from,
+      xend = to,
+      y = index,
+      yend = index
+    )
+  ) +
+  ggplot2::theme_minimal() +
+  ggplot2::labs(
+    x = "Token Index",
+    y = "Segment Index"
+  )
+ggplot2::ggsave("results/ml3-concat-text5-gumbel.p-segments.pdf", width = 10, height = 4)
+
+seeded_intervals_df$ltthreshold <- seeded_intervals_df$significance <= 0.005
+
+ggplot2::ggplot() +
+  ggplot2::geom_segment(
+    data = seeded_intervals_df,
+    ggplot2::aes(
+      x = from,
+      xend = to,
+      y = index,
+      yend = index,
+      color = ltthreshold
+    )
+  ) +
+  ggplot2::scale_color_manual(
+    values = c("black", "red"),
+    labels = c("> 0.005", "<= 0.005")
+  ) +
+  ggplot2::geom_point(
+    data = seeded_intervals_df[seeded_intervals_df$ltthreshold, ],
+    ggplot2::aes(x = change_point_index, y = index),
+    color = "red"
+  ) +
+  ggplot2::theme_minimal() +
+  ggplot2::labs(
+    x = "Token Index",
+    y = "Segment Index"
+  ) +
+  ggplot2::guides(color = ggplot2::guide_legend(title = "Significance"))
+ggplot2::ggsave("results/ml3-concat-text5-gumbel.p-segments-significance.pdf", width = 10, height = 4)
+
+seeded_intervals_df$selected <- FALSE
+seeded_intervals_df$selected[c(36, 41, 13, 18)] <- TRUE
+
+ggplot2::ggplot() +
+  ggplot2::geom_segment(
+    data = seeded_intervals_df,
+    ggplot2::aes(
+      x = from,
+      xend = to,
+      y = index,
+      yend = index,
+      color = ltthreshold
+    )
+  ) +
+  ggplot2::scale_color_manual(
+    values = c("black", "red"),
+    labels = c("> 0.005", "<= 0.005")
+  ) +
+  ggplot2::geom_point(
+    data = seeded_intervals_df[seeded_intervals_df$selected, ],
+    ggplot2::aes(x = change_point_index, y = index),
+    color = "red"
+  ) +
+  ggplot2::theme_minimal() +
+  ggplot2::labs(
+    x = "Token Index",
+    y = "Segment Index"
+  ) +
+  ggplot2::guides(color = ggplot2::guide_legend(title = "Significance"))
+ggplot2::ggsave("results/ml3-concat-text5-gumbel.p-segments-selected.pdf", width = 10, height = 4)
