@@ -1,49 +1,52 @@
 set.seed(1)
 
 folder <- "results/"
-experiment_settings <- paste0(c(0, 1, 2, 4, 9, 19), "changepoints")
-# experiment_settings <- c("comment")
+watermark_key_length <- 1000
+experiment_settings <- c(0, 1, 2, 4)
+rolling_window_size <- 20
+permutation_count <- 999
 models <- c("meta-llama/Meta-Llama-3-8B")
 models_folders_prefix <- c("ml3")
 generation_methods <- c("gumbel", "transform")
-block_size_permutation_pair <- matrix(
-  c(
-    20, 99,
-    20, 249,
-    20, 499,
-    20, 749,
-    20, 999,
-    10, 999,
-    30, 999,
-    40, 999,
-    50, 999
-  ), ncol = 2, byrow = TRUE
-)
+# block_size_permutation_pair <- matrix(
+#   c(
+#     20, 99,
+#     20, 249,
+#     20, 499,
+#     20, 749,
+#     20, 999,
+#     10, 999,
+#     30, 999,
+#     40, 999,
+#     50, 999
+#   ), ncol = 2, byrow = TRUE
+# )
 
-filenames_template <- c("", "-edit")
 pvalue_files_templates <- NULL
 for (model_index in seq_along(models)) {
-  for (experiment_index in seq_along(experiment_settings)) {
-    for (generation_index in seq_along(generation_methods)) {
-      for (distance_index in seq_along(filenames_template)) {
-        pvalue_files_templates <- c(pvalue_files_templates, paste0(
-          folder,
-          models_folders_prefix[model_index],
-          "-",
-          experiment_settings[experiment_index],
-          "-",
-          generation_methods[generation_index],
-          ".p-detect/XXX-",
-          generation_methods[generation_index],
-          filenames_template[distance_index],
-          "-YYY.csv"
-        ))
-      }
+  for (generation_index in seq_along(generation_methods)) {
+    for (experiment_index in seq_along(experiment_settings)) {
+      pvalue_files_templates <- c(pvalue_files_templates, paste0(
+        folder,
+        models_folders_prefix[model_index],
+        "-",
+        generation_methods[generation_index],
+        "-",
+        watermark_key_length,
+        "-",
+        experiment_settings[experiment_index],
+        "-",
+        rolling_window_size,
+        "-",
+        permutation_count,
+        "-detect/XXX-YYY.csv"
+      ))
     }
   }
 }
 
-significance_permutation_count <- 999
+filename <- sub("YYY", 0, sub("XXX", 0, pvalue_files_templates[1]))
+metric_count <- ncol(read.csv(filename, header = FALSE))
 
 get_seeded_intervals <- function(n, decay = sqrt(2), unique.int = FALSE) {
   n <- as.integer(n)
@@ -103,6 +106,7 @@ permute_pvalues <- function(pvalues, block_size = 1) {
   permuted_pvalues[seq_len(length(pvalues))]
 }
 
+significance_permutation_count <- 999
 segment_significance <- function(pvalues) {
   original_ks_statistic <- ks_statistic(pvalues)
   p_tilde <- c(1)
@@ -114,7 +118,7 @@ segment_significance <- function(pvalues) {
   c(original_ks_statistic[1], mean(p_tilde))
 }
 
-prompt_count <- 10
+prompt_count <- 100
 pvalue_files <- NULL
 
 for (pvalue_files_template in pvalue_files_templates) {
@@ -126,45 +130,47 @@ for (pvalue_files_template in pvalue_files_templates) {
 }
 
 args <- commandArgs(trailingOnly = TRUE)
-template_index <- as.integer(args[1])  # Start from 1
-prompt_index <- as.integer(args[2])  # Start from 0
-seeded_interval_index <- as.integer(args[3])  # Start from 1 to 148 for 1300 tokens
+template_index <- as.integer(args[1])  # 1 to 8
+prompt_index <- as.integer(args[2])  # 0 to 99
+seeded_interval_index <- as.integer(args[3])  # 1 to 47 for 500 tokens
 
-# The parameter `k` used in `textgen`
-segment_length <- 20
 # as.integer(gsub('^.*B-|-T.*$', '', pvalue_files_templates[template_index]))
 seeded_intervals_minimum <- 50
 token_count <- 500
-# token_count <- 1300
 seeded_intervals <- get_seeded_intervals(
-  token_count - segment_length,
+  token_count - rolling_window_size,
   decay = sqrt(2), unique.int = TRUE
 )
 segment_length_cutoff <-
   seeded_intervals[, 2] - seeded_intervals[, 1] >= seeded_intervals_minimum
 seeded_intervals <- seeded_intervals[segment_length_cutoff, ]
-seeded_intervals <- seeded_intervals + segment_length / 2
+seeded_intervals <- seeded_intervals + rolling_window_size / 2
 
-filename <- sub("XXX", prompt_index, pvalue_files_templates[template_index])
-filename <- sub("YYY", paste0("SeedBS-", seeded_interval_index), filename)
-if (!file.exists(filename)) {
-  pvalue_vector <- rep(
+seedbs_filename <-
+  sub("XXX", prompt_index, pvalue_files_templates[template_index])
+seedbs_filename <-
+  sub("YYY", paste0("SeedBS-", seeded_interval_index), seedbs_filename)
+if (!file.exists(seedbs_filename)) {
+  pvalue_matrix <- matrix(
     NA,
-    seeded_intervals[seeded_interval_index, 2] -
-      seeded_intervals[seeded_interval_index, 1] + 1
+    nrow = seeded_intervals[seeded_interval_index, 2] -
+      seeded_intervals[seeded_interval_index, 1] + 1,
+    ncol = metric_count
   )
-  for (i in seq_len(length(pvalue_vector))) {
-    filename <- sub("XXX", prompt_index, pvalue_files_templates[template_index])
-    filename <- sub(
-      "YYY", seeded_intervals[seeded_interval_index, 1] + i - 1 - 1, filename
+  for (i in seq_len(nrow(pvalue_matrix))) {
+    pvalue_filename <-
+      sub("XXX", prompt_index, pvalue_files_templates[template_index])
+    pvalue_filename <- sub(
+      "YYY",
+      seeded_intervals[seeded_interval_index, 1] + i - 1 - 1,
+      pvalue_filename
     )
-    pvalue_vector[i] <- unlist(read.csv(filename, header = FALSE))
+    pvalue_matrix[i, ] <- unlist(read.csv(pvalue_filename, header = FALSE))
   }
-  index_p_tilde <- segment_significance(pvalue_vector)
-  filename <- sub("XXX", prompt_index, pvalue_files_templates[template_index])
-  filename <- sub("YYY", paste0("SeedBS-", seeded_interval_index), filename)
+  # apply segment_significance to each column of pvalue_matrix
+  index_p_tilde <- apply(pvalue_matrix, 2, segment_significance)
   write.table(
-    index_p_tilde, filename,
+    index_p_tilde, seedbs_filename,
     sep = ",", row.names = FALSE, col.names = FALSE
   )
 }
