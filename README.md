@@ -83,39 +83,23 @@ sacct -j $jobid --format=JobID,JobName,State,ExitCode --parsable2 | awk -F'|' '
 ### Change point analysis
 
 ```shell
-rm -f 4-seedbs-commands.sh
-for template_index in $(seq 1 24); do
-  for prompt_index in $(seq 0 9); do
-    for seeded_interval_index in $(seq 1 47); do
-      echo "Rscript 4-seedbs.R $template_index $prompt_index $seeded_interval_index" >> 4-seedbs-commands.sh
-    done
-  done
-done
-
-sbatch 4-seedbs.sh
+bash 4-seedbs-helper.sh
+jobid=$(sbatch --parsable 4-seedbs.sh)
+sacct -j $jobid --format=JobID,JobName,State,ExitCode --noheader | grep seedbs
+sacct -j $jobid --format=JobID,JobName,State,ExitCode --parsable2 | awk -F'|' '
+  /seedbs/ {
+    if ($3 == "NODE_FAIL") { node_fail++ }
+    if ($3 == "PENDING") { pending++ }
+    if ($3 == "COMPLETED") { completed++ }
+    if ($3 == "RUNNING" ) { running++ }
+  }
+  END {
+    print "Node fail:", node_fail
+    print "Pending:", pending
+    print "Completed:", completed
+    print "Running:", running
+  }'
 ```
-
-```shell
-parallel -j 8 --progress Rscript analyze.R {1} {2} ::: $(seq 1 400 2801) ::: $(seq 400 400 3200)
-Rscript analyze.R 1 3200
-```
-
-#### Expected running time
-
-Less than 12 hours on 8 compute nodes with no GPU and 28 CPU cores each.
-
-##### Running time test
-
-The following command should run in less than 10 minutes on 1 compute node
-with no GPU and 28 CPU cores.
-
-```shell
-Rscript analyze.R 1 5
-```
-
-#### Expected memory usage
-
-Less than 10 GB per compute node.
 
 ### Ablation study
 
