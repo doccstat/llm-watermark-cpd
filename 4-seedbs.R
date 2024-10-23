@@ -163,5 +163,8 @@ if (!file.exists(filename)) {
   index_p_tilde <- segment_significance(pvalue_vector)
   filename <- sub("XXX", prompt_index, pvalue_files_templates[template_index])
   filename <- sub("YYY", paste0("SeedBS-", seeded_interval_index), filename)
-  write.csv(index_p_tilde, filename, row.names = FALSE)
+  write.table(
+    index_p_tilde, filename,
+    sep = ",", row.names = FALSE, col.names = FALSE
+  )
 }
