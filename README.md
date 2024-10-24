@@ -45,29 +45,19 @@ time and memory usage are provided in the corresponding sbatch scripts.
 > Please modify the paths, uncomment Slurm mail options and adjust the GPU
 > resources in the sbatch scripts before running the experiments.
 
-### Setup pyx.
-
 ```shell
+# Setup pyx.
 sbatch 1-setup.sh
-```
 
-### Text generation.
-
-```shell
+# Text generation.
 bash 2-textgen-helper.sh
 sbatch 2-textgen.sh
-```
 
-### Rolling window watermark detection.
-
-```shell
+# Rolling window watermark detection.
 bash 3-detect-helper.sh
 sbatch 3-detect.sh
-```
 
-### Change point analysis
-
-```shell
+# Change point analysis
 bash 4-seedbs-helper.sh
 sbatch 4-seedbs.sh
 ```
