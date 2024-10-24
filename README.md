@@ -30,7 +30,6 @@ Implementation of the methods described in "Segmenting Watermarked Texts From La
 > Refer to https://pytorch.org for PyTorch installation on other platforms
 
 ```shell
-# conda install pytorch torchvision torchaudio cpuonly -c pytorch
 conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
 conda install conda-forge::transformers
 conda install cython scipy nltk sentencepiece sacremoses
