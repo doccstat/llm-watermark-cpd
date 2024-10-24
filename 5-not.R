@@ -285,6 +285,34 @@ for (pvalue_files_template in pvalue_files_templates) {
 }
 parallel::stopCluster(clusters)
 
+# for (pvalue_files_template_index in seq_along(pvalue_files_templates)) {
+#   pvalue_matrix <- data.frame(
+#     t(pvalue_matrices[[pvalue_files_templates[pvalue_files_template_index]]])
+#   )
+#   colnames(pvalue_matrix) <- paste0("Prompt", seq_len(ncol(pvalue_matrix)))
+#   pvalue_matrix$time <- seq_len(nrow(pvalue_matrix))
+#   df <- reshape2::melt(pvalue_matrix, id.vars = "time", value.name = "Value")
+
+#   ggplot2::ggplot(df, ggplot2::aes(x = time, y = Value, color = variable)) +
+#     ggplot2::geom_line() +
+#     ggplot2::geom_segment(
+#       ggplot2::aes(
+#         xend = time,
+#         yend = 0,
+#         color = variable
+#       )
+#     ) +
+#     ggplot2::facet_wrap(~variable) +
+#     ggplot2::theme_minimal() +
+#     ggplot2::labs(x = "Index", y = "P-Value") +
+#     ggplot2::theme(legend.position = "none")
+#   ggplot2::ggsave(
+#     paste0(aggregated_filenames[pvalue_files_template_index], "-pvalue.pdf"),
+#     width = 15,
+#     height = 15
+#   )
+# }
+
 for (model_index in seq_along(models)) { # nolint
   false_positive_df <- data.frame(matrix(NA, 0, 4))
   rand_index_df <- data.frame(matrix(NA, 0, 5))
