@@ -1,9 +1,6 @@
-import sys
-import numpy as np
-from watermarking.gumbel.gumbel_levenshtein import gumbel_levenshtein
-from watermarking.gumbel.ems_levenshtein import ems_levenshtein
-
 import torch
+
+from watermarking.gumbel.gumbel_levenshtein import gumbel_levenshtein
 
 
 def gumbel_score(tokens, xi):
@@ -13,4 +10,3 @@ def gumbel_score(tokens, xi):
 
 def gumbel_edit_score(tokens, xi, gamma):
     return gumbel_levenshtein(tokens.numpy(), xi.numpy(), gamma)
-

@@ -1,3 +1,5 @@
+import torch
+
 from numpy import ceil
 
 from argparse import ArgumentParser
@@ -24,7 +26,6 @@ from watermarking.gumbel.sampler import gumbel_sampling
 from watermarking.transform.key import transform_key_func
 from watermarking.transform.sampler import transform_sampling
 
-import torch
 
 parser = ArgumentParser(description="Experiment Settings")
 

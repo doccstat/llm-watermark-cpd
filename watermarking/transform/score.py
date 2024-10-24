@@ -1,9 +1,6 @@
-import sys
-import numpy as np
-from watermarking.transform.transform_levenshtein import transform_levenshtein
-from watermarking.transform.its_levenshtein import its_levenshtein
-
 import torch
+
+from watermarking.transform.transform_levenshtein import transform_levenshtein
 
 
 def transform_score(tokens, xi):
