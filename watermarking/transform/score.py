@@ -1,10 +1,12 @@
-import torch
+from torch.linalg import norm
+
+from torch import pow as torch_pow
 
 from watermarking.transform.transform_levenshtein import transform_levenshtein
 
 
 def transform_score(tokens, xi):
-    return torch.pow(torch.linalg.norm(tokens-xi.squeeze(), ord=1), 1)
+    return torch_pow(norm(tokens-xi.squeeze(), ord=1), 1)
 
 
 def transform_edit_score(tokens, xi, gamma=1):

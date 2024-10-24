@@ -1,11 +1,11 @@
-import time
 import torch
+import numpy as np
 
 from collections import defaultdict
-import copy
 
-import numpy as np
+from copy import deepcopy
 from numpy import genfromtxt
+from time import time
 
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
@@ -52,7 +52,7 @@ parser.add_argument('--truncate_vocab', default=8, type=int)
 parser.add_argument('--fixed_i', default=-1, type=int)
 
 args = parser.parse_args()
-results['args'] = copy.deepcopy(args)
+results['args'] = deepcopy(args)
 
 fixed_i = None if args.fixed_i == -1 else args.fixed_i
 
@@ -76,7 +76,7 @@ log_file = open(
 log_file.write(str(args) + '\n')
 log_file.flush()
 
-t0 = time.time()
+t0 = time()
 
 if args.model == "facebook/opt-1.3b":
     vocab_size = 50272
@@ -91,7 +91,7 @@ else:
     print(model.get_output_embeddings().weight.shape[0])
     raise
 eff_vocab_size = vocab_size - args.truncate_vocab
-log_file.write(f'Loaded the model (t = {time.time()-t0} seconds)\n')
+log_file.write(f'Loaded the model (t = {time()-t0} seconds)\n')
 log_file.flush()
 
 prompt_tokens = args.prompt_tokens      # minimum prompt length
@@ -105,7 +105,7 @@ seeds = np.genfromtxt(args.token_file + '-seeds.csv',
 watermarked_samples = genfromtxt(
     args.token_file + '-attacked-tokens.csv', delimiter=",")
 Tindex = min(args.Tindex, watermarked_samples.shape[0])
-log_file.write(f'Loaded the samples (t = {time.time()-t0} seconds)\n')
+log_file.write(f'Loaded the samples (t = {time()-t0} seconds)\n')
 log_file.flush()
 
 if args.method == "transform":
@@ -209,7 +209,7 @@ def test(tokens, seed, test_stats):
                                     fixed_i=fixed_i)
 
 
-t1 = time.time()
+t1 = time()
 
 csv_saves = []
 csvWriters = []
@@ -275,16 +275,16 @@ else:
 
 watermarked_sample = watermarked_samples
 
-t0 = time.time()
+t0 = time()
 pval = test(watermarked_sample, seeds, test_stats)
-log_file.write(f'Ran watermarked test in (t = {time.time()-t0} seconds)\n')
+log_file.write(f'Ran watermarked test in (t = {time()-t0} seconds)\n')
 log_file.flush()
 for distance_index in range(len(test_stats)):
     csvWriters[distance_index].writerow(np.asarray(pval[distance_index, ]))
     csv_saves[distance_index].flush()
 
 log_file.write(args.token_file + '/' + str(args.Tindex) + ' done')
-log_file.write(f'Ran the experiment (t = {time.time()-t1} seconds)\n')
+log_file.write(f'Ran the experiment (t = {time()-t1} seconds)\n')
 log_file.close()
 
 for csv_save in csv_saves:

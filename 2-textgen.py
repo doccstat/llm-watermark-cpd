@@ -1,9 +1,8 @@
-import torch
-
 from numpy import ceil
 
 from argparse import ArgumentParser
 from tqdm import tqdm
+from torch import device as torch_device, Generator
 from transformers import (
     AutoTokenizer, AutoModelForCausalLM, LogitsProcessorList
 )
@@ -16,6 +15,9 @@ from watermarking.kirchenbauer.watermark_processor import (
 from csv import writer
 from datasets import load_dataset, load_from_disk
 from numpy import asarray
+from torch import arange, clip, manual_seed, randint, randperm, vstack
+from torch.cuda import is_available
+from torch.nn.functional import pad
 
 from watermarking.attacks import (
     insertion_block_attack, substitution_block_attack, gpt_rewrite
@@ -56,8 +58,8 @@ parser.add_argument('--kirch_delta', default=1.0, type=float)
 args = parser.parse_args()
 
 # fix the random seed for reproducibility
-torch.manual_seed(args.seed)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+manual_seed(args.seed)
+device = torch_device("cuda" if is_available() else "cpu")
 
 tokenizer = AutoTokenizer.from_pretrained(
     "/scratch/user/anthony.li/models/" + args.model + "/tokenizer")
@@ -138,7 +140,7 @@ if args.rt_translate:
 
 # this is the "key" for the watermark
 # for now each generation gets its own key
-seeds = torch.randint(2**32, (args.number_of_experiments,))
+seeds = randint(2**32, (args.number_of_experiments,))
 seeds_save = open(args.save + '-seeds.csv', 'w')
 seeds_writer = writer(seeds_save, delimiter=",")
 seeds_writer.writerow(asarray(seeds.squeeze().numpy()))
@@ -227,14 +229,14 @@ while itm < args.number_of_experiments:
     pbar.update(1)
 pbar.close()
 prompt_save.close()
-prompts = torch.vstack(prompts)
+prompts = vstack(prompts)
 
 watermarked_samples = []
 
 batch_count = int(ceil(args.number_of_experiments / args.batch_size))
 pbar = tqdm(total=batch_count)
 for batch in range(batch_count):
-    idx = torch.arange(
+    idx = arange(
         batch * args.batch_size,
         min(args.number_of_experiments, (batch + 1) * args.batch_size))
 
@@ -243,8 +245,8 @@ for batch in range(batch_count):
 
     pbar.update(1)
 pbar.close()
-watermarked_samples = torch.vstack(watermarked_samples)
-watermarked_samples = torch.clip(watermarked_samples, max=eff_vocab_size-1)
+watermarked_samples = vstack(watermarked_samples)
+watermarked_samples = clip(watermarked_samples, max=eff_vocab_size-1)
 
 # Save the text/tokens before attack and NTP for each token in the watermark
 # texts with true and empty prompt.
@@ -286,7 +288,7 @@ for itm in range(args.number_of_experiments):
                                           truncation=True,
                                           max_length=2048)[0]
     if len(watermarked_sample) < args.tokens_count + 1:
-        watermarked_sample = torch.nn.functional.pad(
+        watermarked_sample = pad(
             watermarked_sample, (args.tokens_count-len(watermarked_sample), 0),
             "constant", 0
         )
@@ -295,9 +297,9 @@ for itm in range(args.number_of_experiments):
             list(map(int, args.insertion_blocks_length.split(','))))]
     attacked_tokens_writer.writerow(asarray(watermarked_sample.numpy()))
     if args.method == "transform":
-        generator = torch.Generator()
+        generator = Generator()
         generator.manual_seed(int(seeds[itm]))
-        pi = torch.randperm(vocab_size, generator=generator)
+        pi = randperm(vocab_size, generator=generator)
         pi_writer.writerow(asarray(pi.squeeze().numpy()))
 
     pbar.update(1)
