@@ -285,33 +285,56 @@ for (pvalue_files_template in pvalue_files_templates) {
 }
 parallel::stopCluster(clusters)
 
-# for (pvalue_files_template_index in seq_along(pvalue_files_templates)) {
-#   pvalue_matrix <- data.frame(
-#     t(pvalue_matrices[[pvalue_files_templates[pvalue_files_template_index]]])
-#   )
-#   colnames(pvalue_matrix) <- paste0("Prompt", seq_len(ncol(pvalue_matrix)))
-#   pvalue_matrix$time <- seq_len(nrow(pvalue_matrix))
-#   df <- reshape2::melt(pvalue_matrix, id.vars = "time", value.name = "Value")
-
-#   ggplot2::ggplot(df, ggplot2::aes(x = time, y = Value, color = variable)) +
-#     ggplot2::geom_line() +
-#     ggplot2::geom_segment(
-#       ggplot2::aes(
-#         xend = time,
-#         yend = 0,
-#         color = variable
-#       )
-#     ) +
-#     ggplot2::facet_wrap(~variable) +
-#     ggplot2::theme_minimal() +
-#     ggplot2::labs(x = "Index", y = "P-Value") +
-#     ggplot2::theme(legend.position = "none")
-#   ggplot2::ggsave(
-#     paste0(aggregated_filenames[pvalue_files_template_index], "-pvalue.pdf"),
-#     width = 15,
-#     height = 15
-#   )
-# }
+pvalue_matrix <- NULL
+for (pvalue_files_template_index in seq_along(pvalue_files_templates)) {
+  pvalue_files_template <- pvalue_files_templates[pvalue_files_template_index]
+  pvalue_matrix <- rbind(
+    pvalue_matrix,
+    cbind(
+      paste0(
+        "Setting ",
+        c(1, 2, 3, NA, 4)[
+          as.numeric(
+            pvalue_files_template_matrix[pvalue_files_template_index, 8]
+          ) + 1
+        ]
+      ),
+      paste0(
+        c("EMS", "ITS")[
+          (
+            pvalue_files_template_matrix[
+              pvalue_files_template_index, 4
+            ] == "transform"
+          ) + 1
+        ],
+        c("", "L")[
+          (pvalue_matrices[[pvalue_files_template]]$metric == "1") + 1
+        ]
+      ),
+      pvalue_matrices[[pvalue_files_template]]
+    )[pvalue_matrices[[pvalue_files_template]]$prompt_index <= 10, ]
+  )
+}
+names(pvalue_matrix) <-
+  c("Setting", "Method", "prompt_index", "token_index", "metric", "pvalue")
+pvalue_matrix$prompt_index <- paste("Prompt", pvalue_matrix$prompt_index)
+ggplot2::ggplot(
+  pvalue_matrix, ggplot2::aes(
+    x = token_index, y = pvalue, color = Setting
+  )
+) +
+  ggplot2::geom_line() +
+  ggplot2::facet_grid(Setting + Method ~ prompt_index) +
+  ggplot2::theme_minimal() +
+  ggplot2::labs(x = "Index", y = "P-Value") +
+  ggplot2::scale_x_continuous(breaks = seq(0, token_count, by = 100)) +
+  ggplot2::scale_y_continuous(breaks = seq(0, 1, by = 0.25)) +
+  ggplot2::theme(legend.position = "none")
+ggplot2::ggsave(
+  paste0("results/", models_folders_prefix[1], "-pvalue.pdf"),
+  width = 15,
+  height = 15
+)
 
 for (model_index in seq_along(models)) { # nolint
   false_positive_df <- data.frame(matrix(NA, 0, 4))
