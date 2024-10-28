@@ -26,9 +26,6 @@ Implementation of the methods described in "Segmenting Watermarked Texts From La
 
 ### Set up environments
 
-> [!NOTE]
-> Refer to https://pytorch.org for PyTorch installation on other platforms
-
 ```shell
 conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
 conda install conda-forge::transformers
