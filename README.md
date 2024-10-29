@@ -60,15 +60,14 @@ sbatch 4-seedbs.sh
 
 # Citation
 
-TBD
-
 ```bibtex
-@inproceedings{
-  anonymous2024segmenting,
+@misc{li2024segmentingwatermarkedtextslanguage,
   title={Segmenting Watermarked Texts From Language Models},
-  author={Anonymous},
-  booktitle={The Thirty-eighth Annual Conference on Neural Information Processing Systems},
+  author={Xingchi Li and Guanxun Li and Xianyang Zhang},
   year={2024},
-  url={https://openreview.net/forum?id=FAuFpGeLmx}
+  eprint={2410.20670},
+  archivePrefix={arXiv},
+  primaryClass={cs.LG},
+  url={https://arxiv.org/abs/2410.20670},
 }
 ```
