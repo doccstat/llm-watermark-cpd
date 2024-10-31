@@ -57,10 +57,10 @@ sbatch 2-textgen.sh
 bash 3-detect-helper.sh
 sbatch 3-detect.sh
 
-# Change point analysis.
+# Change point analysis using R.
 bash 4-seedbs-helper.sh
 sbatch 4-seedbs.sh
-# OR
+# OR using Python.
 bash 4.1-seedbs-helper.sh
 sbatch 4.1-seedbs.sh
 
