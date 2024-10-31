@@ -70,7 +70,7 @@ Rscript 5-not.R
 
 > [!TIP]
 > The implementation of NOT can be found in the [5-not.R](./5-not.R) script from
-> line 348 to 371.
+> [line 348 to 371](https://github.com/doccstat/llm-watermark-cpd/blob/main/5-not.R#L348-L371).
 
 ## Citation
 
