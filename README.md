@@ -37,9 +37,13 @@ conda install cython scipy nltk sentencepiece sacremoses
 All experiments are conducted using Slurm workload manager. Expected running
 time and memory usage are provided in the corresponding sbatch scripts.
 
-> [!NOTE]
-> Please modify the paths, uncomment Slurm mail options and adjust the GPU
-> resources in the sbatch scripts before running the experiments.
+> [!IMPORTANT]
+> Please modify the paths, Slurm mail options and adjust the GPU resources in
+> the sbatch scripts before running the experiments.
+
+> [!CAUTION]
+> The Python SeedBS script is modified based on the R version. The output is not
+> guaranteed to be the same.
 
 ```shell
 # Setup pyx.
@@ -53,12 +57,22 @@ sbatch 2-textgen.sh
 bash 3-detect-helper.sh
 sbatch 3-detect.sh
 
-# Change point analysis
+# Change point analysis.
 bash 4-seedbs-helper.sh
 sbatch 4-seedbs.sh
+# OR
+bash 4.1-seedbs-helper.sh
+sbatch 4.1-seedbs.sh
+
+# Result analysis and ploting. (NOT)
+Rscript 5-not.R
 ```
 
-# Citation
+> [!TIP]
+> The implementation of NOT can be found in the [5-not.R](./5-not.R) script from
+> line 348 to 371.
+
+## Citation
 
 ```bibtex
 @misc{li2024segmentingwatermarkedtextslanguage,
