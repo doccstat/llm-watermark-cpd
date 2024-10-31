@@ -2,6 +2,8 @@
 
 Implementation of the methods described in "Segmenting Watermarked Texts From Language Models" by [Xingchi Li](https://xingchi.li), [Guanxun Li](https://guanxun.li), [Xianyang Zhang](https://zhangxiany-tamu.github.io).
 
+[![doi](https://img.shields.io/badge/doi-10.48550/arXiv.2410.20670-green.svg)](https://doi.org/10.48550/arXiv.2410.20670)
+
 ## Prerequisites
 
 <details closed>
