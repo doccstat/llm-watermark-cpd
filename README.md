@@ -2,6 +2,7 @@
 
 Implementation of the methods described in "Segmenting Watermarked Texts From Language Models" by [Xingchi Li](https://xingchi.li), [Guanxun Li](https://guanxun.li), [Xianyang Zhang](https://zhangxiany-tamu.github.io).
 
+[![OpenReview](https://img.shields.io/badge/OpenReview-Segmenting%20Watermarked%20Texts%20From%20Language%20Models-green.svg)](https://openreview.net/forum?id=FAuFpGeLmx)
 [![doi](https://img.shields.io/badge/doi-10.48550/arXiv.2410.20670-green.svg)](https://doi.org/10.48550/arXiv.2410.20670)
 
 ## Prerequisites
@@ -77,13 +78,12 @@ Rscript 5-not.R
 ## Citation
 
 ```bibtex
-@misc{li2024segmentingwatermarkedtextslanguage,
+@inproceedings{
+  li2024segmenting,
   title={Segmenting Watermarked Texts From Language Models},
   author={Xingchi Li and Guanxun Li and Xianyang Zhang},
+  booktitle={The Thirty-eighth Annual Conference on Neural Information Processing Systems},
   year={2024},
-  eprint={2410.20670},
-  archivePrefix={arXiv},
-  primaryClass={cs.LG},
-  url={https://arxiv.org/abs/2410.20670},
+  url={https://openreview.net/forum?id=FAuFpGeLmx}
 }
 ```
