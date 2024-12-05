@@ -87,3 +87,7 @@ Rscript 5-not.R
   url={https://openreview.net/forum?id=FAuFpGeLmx}
 }
 ```
+
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/doccstat/llm-watermark-cpd.svg)](https://starchart.cc/doccstat/llm-watermark-cpd)
