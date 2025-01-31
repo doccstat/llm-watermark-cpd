@@ -30,8 +30,8 @@ Implementation of the methods described in "Segmenting Watermarked Texts From La
 ### Set up environments
 
 ```shell
-conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
-conda install conda-forge::transformers
+# PyTorch: https://pytorch.org/get-started/locally
+# Transformers: https://huggingface.co/docs/transformers/en/installation
 conda install cython scipy nltk sentencepiece sacremoses
 ```
 
@@ -67,7 +67,7 @@ sbatch 4-seedbs.sh
 bash 4.1-seedbs-helper.sh
 sbatch 4.1-seedbs.sh
 
-# Result analysis and ploting. (NOT)
+# Result analysis and ploting.
 Rscript 5-not.R
 ```
 
