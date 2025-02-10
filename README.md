@@ -78,6 +78,23 @@ Rscript 5-not.R
 ## Citation
 
 ```bibtex
+@inproceedings{NEURIPS2024_1a8d2958,
+  author = {Li, Xingchi and Li, Guanxun and Zhang, Xianyang},
+  booktitle = {Advances in Neural Information Processing Systems},
+  editor = {A. Globerson and L. Mackey and D. Belgrave and A. Fan and U. Paquet and J. Tomczak and C. Zhang},
+  pages = {14634--14665},
+  publisher = {Curran Associates, Inc.},
+  title = {Segmenting Watermarked Texts From Language Models},
+  url = {https://proceedings.neurips.cc/paper_files/paper/2024/file/1a8d295871250443f9747d239925b89d-Paper-Conference.pdf},
+  volume = {37},
+  year = {2024}
+}
+```
+
+<details closed>
+<summary>OpenReview and ArXiv</summary>
+
+```bibtex
 @inproceedings{
   li2024segmenting,
   title={Segmenting Watermarked Texts From Language Models},
@@ -86,7 +103,19 @@ Rscript 5-not.R
   year={2024},
   url={https://openreview.net/forum?id=FAuFpGeLmx}
 }
+
+@misc{li2024segmentingwatermarkedtextslanguage,
+  title={Segmenting Watermarked Texts From Language Models}, 
+  author={Xingchi Li and Guanxun Li and Xianyang Zhang},
+  year={2024},
+  eprint={2410.20670},
+  archivePrefix={arXiv},
+  primaryClass={cs.LG},
+  url={https://arxiv.org/abs/2410.20670}, 
+}
 ```
+
+</details>
 
 ## Stargazers over time
 
