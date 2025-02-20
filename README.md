@@ -2,6 +2,7 @@
 
 Implementation of the methods described in "Segmenting Watermarked Texts From Language Models" by [Xingchi Li](https://xingchi.li), [Guanxun Li](https://guanxun.li), [Xianyang Zhang](https://zhangxiany-tamu.github.io).
 
+[![NeurIPS Proceedings](https://img.shields.io/badge/NeurIPS%20Proceedings-Segmenting%20Watermarked%20Texts%20From%20Language%20Models-007bff.svg)](https://proceedings.neurips.cc/paper_files/paper/2024/hash/1a8d295871250443f9747d239925b89d-Abstract-Conference.html)
 [![OpenReview](https://img.shields.io/badge/OpenReview-Segmenting%20Watermarked%20Texts%20From%20Language%20Models-8c1b13.svg)](https://openreview.net/forum?id=FAuFpGeLmx)
 [![doi](https://img.shields.io/badge/doi-10.48550/arXiv.2410.20670-b31b1b.svg)](https://doi.org/10.48550/arXiv.2410.20670)
 
